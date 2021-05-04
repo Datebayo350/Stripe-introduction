@@ -10,7 +10,7 @@ module.exports = {
                 const paymentIntention = await stripe.paymentIntents
                 .create({
                     customer:"cus_JQ9oPquYIz7zoN",
-                    amount: "20000",
+                    amount: 1500,
                     currency: "eur",
                     description:" Paiement en cours de réalisation",
                     receipt_email: "constantin@fitlab.fr",
@@ -33,7 +33,7 @@ module.exports = {
             
             try {
                 const intentPaymentRetrieved = await stripe.paymentIntents
-                .retrieve("pi_1InN2sLG9PLRTQCEPh49EjxE");
+                .retrieve("pi_1InMyDLG9PLRTQCEFy6NLBaa");
 
                 return res.json({ success: true, result: intentPaymentRetrieved })
 
@@ -41,6 +41,24 @@ module.exports = {
                 next(error)
             }
         },
+
+        update: async (req, res, next) => {
+            
+            try {
+                console.log(req.body);
+                const intentPaymentUpdated = await stripe.paymentIntents
+                .update("pi_1InN2sLG9PLRTQCEPh49EjxE",{
+                    amount: "8888"
+                });
+
+
+                return res.json({ success: true, result: intentPaymentUpdated })
+
+            } catch (error) {
+                next(error)
+            }
+        },
+
 
        
     },
