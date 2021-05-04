@@ -27,6 +27,19 @@ module.exports = {
                 next(error);
             }
             
+        }, 
+        
+        retrieve: async (req, res, next) => {
+            
+            try {
+                const intentPaymentRetrieved = await stripe.paymentIntents
+                .retrieve("pi_1InN2sLG9PLRTQCEPh49EjxE");
+
+                return res.json({ success: true, result: intentPaymentRetrieved })
+
+            } catch (error) {
+                next(error)
+            }
         },
 
        

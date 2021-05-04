@@ -6,6 +6,6 @@ const app = express();
 
 //! Intents 
 app.post('/api/intents/create', StripeController.intents.create);
-
+app.get('/api/intents/retrieve', StripeController.intents.retrieve);
 
 app.listen(5000, () => (console.log("Serveur démaré sur le port 5000")))
