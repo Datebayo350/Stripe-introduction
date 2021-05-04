@@ -58,8 +58,6 @@ module.exports = {
                 next(error)
             }
         },
-
-
        
     },
 
@@ -149,7 +147,65 @@ module.exports = {
             }
         }
     },
+    
     customers: {
+        create: async (req, res, next) => {
+            try {
+                const newCustomer = await stripe.customers
+                .create ({
+                    name: "Claudiu",
+                    phone: "+33 769875425",
+                    email: "claudiu@fitlab.fr",
+                    description: "Professionnel",
+                })
+                
+                res.json({success: true, result: newCustomer})
+            } 
+            
+            catch (error) {
+                
+                next(error)
+            }
+        },
 
-    },
+        retrieve: async (req, res, next) => {
+            try {
+                
+                const customer = await stripe.customers
+                .retrieve("cus_JQG6G02ZZiFaml");
+                
+                res.json({success: true, result: customer})
+                
+            } 
+            
+            catch (error) {
+                next(error);
+            }
+        },
+
+        update: async (req, res, next) => {
+            try {
+                
+                const editedCustomer = await stripe.customers
+                .update("cus_JQG6G02ZZiFaml", 
+                {
+                    address: {
+                        city: "Rennes",
+                        country: "France",
+                        state: "Bretagne",
+                        postal_code: 35000,
+                    },
+                    balance: 15000,
+                    description: "Professionnel du milieu sportif",
+                });
+                
+                res.json({success: true, result: editedCustomer})
+                
+            } 
+            
+            catch (error) {
+                next(error);
+            }
+        }
+    }
 };
