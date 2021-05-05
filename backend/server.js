@@ -1,9 +1,27 @@
 require('dotenv').config();
 const StripeController = require("./controllers/Stripe");
-const express = require('express');
+const asyncHandler = require("express-async-handler");
 const mongoose = require('mongoose')
+const express = require('express');
+const cors = require("cors");
 const app = express();
 
+try {
+    mongoose.connect("mongodb://uxp5wmegbdngfclmirwc:ZENXCgiCd8NnhURih03K@brwf4e9kmpmqr0b-mongodb.services.clever-cloud.com:27017/brwf4e9kmpmqr0b",{
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        useCreateIndex: true, 
+        autoIndex: true,
+    })
+    console.log("Connexion database réussie !");
+} catch (error) {
+    console.log(error);
+}
+
+//! Middleware
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(cors());
 
 //! Intents 
 app.post('/api/intents/create', StripeController.intents.create);
