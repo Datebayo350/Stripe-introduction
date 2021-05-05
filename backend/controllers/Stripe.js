@@ -1,6 +1,6 @@
 const SECRET_API_KEY = process.env.SECRET_API_KEY;
 const stripe = require('stripe')(SECRET_API_KEY);
-
+const CustomerModel = require('./../models/Customer');
 module.exports = {
     
     intents: {
@@ -151,6 +151,16 @@ module.exports = {
     customers: {
         create: async (req, res, next) => {
             try {
+                await CustomerModel.init();
+                const newCleverCustomer = new CustomerModel({
+                    name: "Corsair",
+                    phone: "0769235087",
+                    email: "claudiu@fitlab.fr",
+                    description: "Professionnel",
+                    balance: 5000,
+                })
+                await newCleverCustomer.save();
+                
                 const newCustomer = await stripe.customers
                 .create ({
                     name: "Claudiu",
