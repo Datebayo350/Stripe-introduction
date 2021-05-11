@@ -4,7 +4,30 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import "./../App.css"
  
-
+//? Objet Style permettant de styliser un Stripe Element: https://stripe.com/docs/js/appendix/style, syntaxe vue ici : https://github.com/stripe/react-stripe-js/blob/9fe1a5473cd1125fcda4e01adb6d6242a9bae731/examples/hooks/4-IBAN.js
+const CARD_OPTIONS = {
+  iconStyle: "solid",
+  style: {
+    base: {
+      iconColor: "#3f1414",
+      color: "#fff",
+      fontWeight: 500,
+      fontFamily: "Roboto, Open Sans, Segoe UI, sans-serif",
+      fontSize: "16px",
+      fontSmoothing: "antialiased",
+      ":-webkit-autofill": {
+        color: "#fce883"
+      },
+      "::placeholder": {
+        color: "#FEE2E2"
+      }
+    },
+    invalid: {
+      iconColor: "#ffc7ee",
+      color: "#ffc7ee"
+    }
+  }
+};
 export default function CheckoutForm () {
   
   //? Si pas de destructuration lors de la création de la méthode de paiement, ces hooks sont une possibilité|
