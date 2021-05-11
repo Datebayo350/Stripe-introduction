@@ -21,7 +21,7 @@ export default function CheckoutForm () {
   
  
   //? Permet d'accéder à toutes les méthodes de l'API Stripe.JS : https://stripe.com/docs/js, https://stripe.com/docs/stripe-js/react#usestripe-hook
-  //? Ce Hook retourne une référence de l'objet Stripe passe au provide Element dans App.js : https://stripe.com/docs/js/initializing
+  //? Ce Hook retourne une référence de l'objet Stripe passé au provider Element dans App.js : https://stripe.com/docs/js/initializing
   const stripe = useStripe();
 
   //? Permet de récupérer la référence d'un Stripe Element : https://stripe.com/docs/stripe-js/react#useelements-hook  
@@ -31,7 +31,38 @@ export default function CheckoutForm () {
   //? Nous pouvons transmettre ces Hooks à travers les props de l'élément "Elements" parent au besoin,
   // const {stripe, elements} = this.props;
 
-  
+  useEffect( () => {
+    //? Quand le client arrive sur la page, on crée automatiquement une intention de paiement qu'on viendra confirmer lors de la soumission du formulaire
+    async function getClientSecret () {
+      try {
+        //? On appel notre API personnelle qui s'occupe de créer une intention de paiement et on lui fourni les informations requises pour cela 
+        const secretClientCall =  await axios.post("http://localhost:5000/api/intents/create",{
+          //! Propriété obligatoire pour créer une paiement
+          amount: "700000", //? Toujours rajouter 2 "zero" pour obtenir le chiffre souhaité car stripe crée des prix avec des nombres décimaux 
+          //! Propriété obligatoire pour créer une paiement
+          currency: "eur",
+           //! Propriété Optionnelle
+          customer: "cus_JSUynGjup4aRqD", //? Si je ne renseigne pas le client avec son ID, les informations personnelles de l'utilisateur ayant effectué le paiement seront celles rentrées par le client dans le formulaire
+        })
+
+        console.log(secretClientCall);
+        
+        //? Promesse résolue, le client HTTP Axios nous renvoie directement un objet JSON, pas besoin de le stringifier
+        const secret = secretClientCall.data.secret;
+
+        //? On stock la clé secrète de l'intention de paiement
+        setClientSecret(secret)
+      }
+
+      catch(error) {
+        console.log(error);
+      }
+    
+    };
+      
+    getClientSecret();
+    console.log(clientSecret);
+  },[]);
   
 
 
