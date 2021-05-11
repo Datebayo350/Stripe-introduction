@@ -1,4 +1,5 @@
 import { CardElement, useStripe, useElements} from "@stripe/react-stripe-js";
+import {Field, FieldSet} from './CustomComponents';
 import { useState, useEffect } from "react";
 import axios from "axios";
 import "./../App.css"
@@ -70,7 +71,7 @@ export default function CheckoutForm () {
     //? La confirmation de paiement est en cours de validation
     setProcessing(true)
     
-    //? On passe la valeur qui nous sert à desactiver le bouton de soumission du formulaire à true, pour ne pas le soumettre à nouveau par erreur
+    //? On passe la valeur qui nous sert à désactiver le bouton de soumission du formulaire à true, pour ne pas le soumettre à nouveau par erreur
     setDisabled(true);
 
     event.preventDefault();
@@ -82,7 +83,7 @@ export default function CheckoutForm () {
 
     const cardElement = elements.getElement(CardElement);
     
-    //TODO: La créatoin d'un élément from scratch ne fonctionne pas en l'état, approfondir le sujet exemple d'utilisation ici => : https://github.com/stripe/react-stripe-js/blob/9fe1a5473cd1125fcda4e01adb6d6242a9bae731/examples/hooks/4-IBAN.js
+    //TODO: La création d'un élément from scratch ne fonctionne pas en l'état, approfondir le sujet exemple d'utilisation ici => : https://github.com/stripe/react-stripe-js/blob/9fe1a5473cd1125fcda4e01adb6d6242a9bae731/examples/hooks/4-IBAN.js
     //? Créer un élément =>: https://stripe.com/docs/js/elements_object/create_element?type=iban et le monter dans le DOM : https://stripe.com/docs/js/element/mount
     // const ibanElement = elements.getElement(IbanElement);
    
