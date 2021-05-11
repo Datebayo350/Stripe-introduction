@@ -3,8 +3,13 @@ const SECRET_API_KEY = process.env.SECRET_API_KEY;
 const StripeController = require("./controllers/Stripe");
 const express = require('express');
 const mongoose = require('mongoose')
-const stripe = require('stripe')(SECRET_API_KEY);
 const app = express();
+const asyncHandler = require("express-async-handler");
+const cors = require("cors");
+
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(cors());
 
 
 

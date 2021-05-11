@@ -36,3 +36,24 @@
     transform: rotate(360deg);
   }
 }
+
+.bg-body {
+  background-color: #e56f67;
+}
+
+.custom-bg {
+  background-color:rgba(231, 203, 126, 0.178);
+}
+
+input::placeholder {
+ 
+  background-color:rgba(252, 64, 64, 0.178);
+}
+
+.test {
+  background-color: aquamarine;
+}
+
+.button {
+  background-color: #8de2de;
+}
