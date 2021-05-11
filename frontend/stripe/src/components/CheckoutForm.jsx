@@ -64,7 +64,75 @@ export default function CheckoutForm () {
     console.log(clientSecret);
   },[]);
   
+  const handleSubmit = async (event) => {
+    //? Formulaire envoyée ? 
+    
+    //? La confirmation de paiement est en cours de validation
+    setProcessing(true)
+    
+    //? On passe la valeur qui nous sert à desactiver le bouton de soumission du formulaire à true, pour ne pas le soumettre à nouveau par erreur
+    setDisabled(true);
 
+    event.preventDefault();
+
+    //? On s'assure que les Hoooks ai chargés avant de continuer
+    if (!stripe || !elements) {
+      return;
+    }
+
+    const cardElement = elements.getElement(CardElement);
+    
+    //TODO: La créatoin d'un élément from scratch ne fonctionne pas en l'état, approfondir le sujet exemple d'utilisation ici => : https://github.com/stripe/react-stripe-js/blob/9fe1a5473cd1125fcda4e01adb6d6242a9bae731/examples/hooks/4-IBAN.js
+    //? Créer un élément =>: https://stripe.com/docs/js/elements_object/create_element?type=iban et le monter dans le DOM : https://stripe.com/docs/js/element/mount
+    // const ibanElement = elements.getElement(IbanElement);
+   
+    console.log(
+      "1)=>",cardElement,
+      // "2)=>", ibanElement,
+    );
+
+    //? possible de créer directement les variables en destructurant l'objet promise que retourne la méthode :  https://stripe.com/docs/js/payment_methods/create_payment_method
+    //? Doc: server.js + CheckoutForm.jsx : https://stripe.com/docs/payments/integration-builder
+    
+    //! Privilégier "confirmCardPayment" à "createPaymentMethod", car elle valide directement l'intention de paiement et crée la méthode de paiement, mais il faut passer la clé secrète de l'utilisateur en arg1 (useEffect: appel API => récupération de la clé => stockage state => utilisation).
+    //? https://stripe.com/docs/js/payment_intents/confirm_card_payment
+    const {paymentIntent, error} = await stripe
+      .confirmCardPayment(clientSecret,{
+        payment_method: {
+            card: cardElement,
+            billing_details: {
+                
+              name: name,
+            },
+        },
+        receipt_email: email,
+      })
+                                                                    //! OU
+      //? Utilisation de méthode en provenance de l'api Stripe.Js, créer une méthode de paiement (Préférer confirmCardPayment) : https://stripe.com/docs/js/payment_methods/create_payment_method
+      // const payload = await stripe.createPaymentMethod({
+      //   type: 'card', //? Valeurs possibles pour le type : https://stripe.com/docs/api/payment_methods/create#create_payment_method-type
+      //   billing_details: {
+      //     name,
+      //     email,
+      //   },
+      // });
+
+	  //? Sans destructuration, Il faudra donc passer par payload. error / paymentMethod pour obtenir les valeurs retour
+    if (error) {
+
+      //? Si la variable "error" a été crée on l'affiche - Vrai utilisation => stockage state
+      console.log('[error]', error.message);
+      setError(error.message);
+      
+    } else {
+
+      //? - Vrai utilisation => stockage state
+      console.log('2)=> [PaymentIntent]', paymentIntent);
+      setSucceeded("Merci pour votre paiement, à bientôt sur FitLab")
+      setProcessing(false)
+
+    }
+  }
 
   //TODO: Si une methode de paiement est définie dans le state on remet les valeurs du state à 0 en cliquant sur un bouton 
   const reset = () => {
