@@ -38,7 +38,7 @@ export default function CheckoutForm () {
   
   };
   
-  //? Version amélioré d'un rendu en fonction de l'existance d'une méthode de paiement : https://github.com/stripe/react-stripe-js/blob/9fe1a5473cd1125fcda4e01adb6d6242a9bae731/examples/hooks/1-Card-Detailed.js
+  //? Version améliorée d'un rendu en fonction de l'existance d'une méthode de paiement : https://github.com/stripe/react-stripe-js/blob/9fe1a5473cd1125fcda4e01adb6d6242a9bae731/examples/hooks/1-Card-Detailed.js
   return (
     <>
     <form  className=" overflow-auto  container mx-auto my-60 w-5/12 p-20 flex-direction-column">
