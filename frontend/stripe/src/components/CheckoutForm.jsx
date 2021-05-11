@@ -69,8 +69,6 @@ export default function CheckoutForm () {
           customer: "cus_JSUynGjup4aRqD", //? Si je ne renseigne pas le client avec son ID, les informations personnelles de l'utilisateur ayant effectué le paiement seront celles rentrées par le client dans le formulaire
         })
 
-        console.log(secretClientCall);
-        
         //? Promesse résolue, le client HTTP Axios nous renvoie directement un objet JSON, pas besoin de le stringifier
         const secret = secretClientCall.data.secret;
 
@@ -89,7 +87,7 @@ export default function CheckoutForm () {
   },[]);
   
   const handleSubmit = async (event) => {
-    //? Formulaire envoyée ? 
+    //? Formulaire envoyé ? 
     
     //? La confirmation de paiement est en cours de validation
     setProcessing(true)
@@ -144,13 +142,14 @@ export default function CheckoutForm () {
 	  //? Sans destructuration, Il faudra donc passer par payload. error / paymentMethod pour obtenir les valeurs retour
     if (error) {
 
-      //? Si la variable "error" a été crée on l'affiche - Vrai utilisation => stockage state
+      //? Si la variable "error" a été créée on l'affiche - Vrai utilisation => stockage state
       console.log('[error]', error.message);
       setError(error.message);
       
     } else {
 
       //? - Vrai utilisation => stockage state
+      //? Si le paiement réussit, un objet payment_intent est créer dans cette variable, avec une propriété " status: "succeeded" "
       console.log('2)=> [PaymentIntent]', paymentIntent);
       setSucceeded("Merci pour votre paiement, à bientôt sur FitLab")
       setProcessing(false)
@@ -173,10 +172,26 @@ export default function CheckoutForm () {
   
   //? Version améliorée d'un rendu en fonction de l'existence d'une méthode de paiement : https://github.com/stripe/react-stripe-js/blob/9fe1a5473cd1125fcda4e01adb6d6242a9bae731/examples/hooks/1-Card-Detailed.js
   return (
-    <>
-    <form  className=" overflow-auto  container mx-auto my-60 w-5/12 p-20 flex-direction-column">
+  <>
+    <form onSubmit={handleSubmit} className=" overflow-auto  container mx-auto my-60 w-5/12 p-20 flex-direction-column">
       
-      <h1>Checkout Form</h1>
+      <FieldSet >
+
+        <Field type="text" id="name" placeholder="Jean Dupont" valueFromState={name} onChange={event=> {setName(event.target.value)}}>Name</Field>
+        <Field type="email" id="email" placeholder="jeandupont@gmail.com" valueFromState={email} onChange={event=> {setEmail(event.target.value)}}>Email</Field>
+        <Field type="number" id="phone" placeholder="+33 078545..." valueFromState={phone} onChange={event=> {setPhone(event.target.value)}}>Phone</Field>
+
+      </FieldSet>
+
+      <FieldSet plus='mt-8'>
+        
+        <div className=" p-2">
+
+          <CardElement  options={CARD_OPTIONS}/>
+
+        </div>
+
+      </FieldSet>
 
       <button type="submit" disabled={disabled} className="p-3 w-full mt-10 justify-self-center button shadow-2xl rounded-md font-bold text-white"> Payer </button>
     </form>
@@ -192,13 +207,14 @@ export default function CheckoutForm () {
       <h2 >
        {succeeded} 
       </h2>
-    }  
+    } 
+
     {error  && 
       <div >
        {error} 
       </div>
     }  
-    </>
+  </>
   );
 }
 
