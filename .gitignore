@@ -1,2 +1,5 @@
 /backend/node_modules
 /backend/.env
+/frontend/stripe/node_modules
+/frontend/stripe/.env
+

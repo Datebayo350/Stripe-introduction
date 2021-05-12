@@ -83,7 +83,6 @@ export default function CheckoutForm () {
     };
       
     getClientSecret();
-    console.log(clientSecret);
   },[]);
   
   const handleSubmit = async (event) => {

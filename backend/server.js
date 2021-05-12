@@ -35,4 +35,9 @@ app.post('/api/payments/saveToUser', StripeController.payments.savePaymentMethod
 app.get('/api/payments/retrieve', StripeController.payments.retrieve);
 app.put('/api/payments/update', StripeController.payments.update);
 
+//! customers
+app.post('/api/customers/create', StripeController.customers.create);
+app.get('/api/customers/retrieve', StripeController.customers.retrieve);
+app.put('/api/customers/update', StripeController.customers.update);
+
 app.listen(5000, () => (console.log("Serveur démaré sur le port 5000")))
