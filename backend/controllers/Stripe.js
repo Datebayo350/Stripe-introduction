@@ -1,5 +1,6 @@
-const SECRET_API_KEY = process.env.SECRET_API_KEY;
-const stripe = require('stripe')(SECRET_API_KEY);
+const SECRET_STRIPE_API_KEY = process.env.SECRET_STRIPE_API_KEY;
+//?  "stripe": "^8.145.0" => Nous permet d'accéder à l' API - Stripe Reference : https://stripe.com/docs/api
+const stripe = require('stripe')(SECRET_STRIPE_API_KEY);
 const CustomerModel = require('./../models/Customer');
 module.exports = {
     
@@ -7,23 +8,17 @@ module.exports = {
 
         create: async (req, res, next) => {
             try {
-                const paymentIntention = await stripe.paymentIntents
-                .create({
-                    customer:"cus_JQ9oPquYIz7zoN",
-                    amount: 1500,
-                    currency: "eur",
-                    description:" Paiement en cours de réalisation",
-                    receipt_email: "constantin@fitlab.fr",
-                    metadata: {
-                        order_id: "1234",
-                    },
-                })
 
-                return res.json({ success: true, result: paymentIntention })
+                //? On envoie une requête sur l'API - PaymentIntents (méthode créate): https://stripe.com/docs/api/payment_intents?lang=node
+                const paymentIntention = await stripe.paymentIntents
+                .create(req.body)
+                const secret = paymentIntention.client_secret;
+                
+                return res.json({ success: true, result: paymentIntention, secret: secret })
             }
 
             catch (error) {
-
+                console.log(error);
                 next(error);
             }
             
@@ -64,7 +59,7 @@ module.exports = {
     payments: {
         create: async (req, res, next) => {
             try {
-                //! Moyen de paiement
+                //! Moyen de paiement (ici carte bancaire)
                 const newPaymentMethod = await stripe.paymentMethods
                 .create({   
                     billing_details: {
@@ -90,7 +85,7 @@ module.exports = {
                 next(error);
             }
         },
-
+        //? Afin de pouvoir modifier une méthode de paiement enregistrée, il faut l'attacher à un utilisateur : https://stripe.com/docs/api/payment_methods/attach?lang=node
         savePaymentMethodToAnUser: async (req, res, next) => {
             
             try {
@@ -152,6 +147,7 @@ module.exports = {
         create: async (req, res, next) => {
             try {
                 await CustomerModel.init();
+                //? Création d'un utilisateur en base de données personnelle
                 const newCleverCustomer = new CustomerModel({
                     name: "Corsair",
                     phone: "0769235087",
@@ -161,6 +157,7 @@ module.exports = {
                 })
                 await newCleverCustomer.save();
                 
+                //? Création d'un utilisateur en base de données Stripe
                 const newCustomer = await stripe.customers
                 .create ({
                     name: "Claudiu",
