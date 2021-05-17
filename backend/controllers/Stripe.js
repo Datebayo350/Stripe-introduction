@@ -28,7 +28,7 @@ module.exports = {
             
             try {
                 const intentPaymentRetrieved = await stripe.paymentIntents
-                .retrieve("pi_1InMyDLG9PLRTQCEFy6NLBaa");
+                .retrieve(req.body.intentId);
 
                 return res.json({ success: true, result: intentPaymentRetrieved })
 
@@ -40,7 +40,6 @@ module.exports = {
         update: async (req, res, next) => {
             
             try {
-                console.log(req.body);
                 const intentPaymentUpdated = await stripe.paymentIntents
                 .update("pi_1InN2sLG9PLRTQCEPh49EjxE",{
                     amount: "8888"
@@ -148,23 +147,12 @@ module.exports = {
             try {
                 await CustomerModel.init();
                 //? Création d'un utilisateur en base de données personnelle
-                const newCleverCustomer = new CustomerModel({
-                    name: "Corsair",
-                    phone: "0769235087",
-                    email: "claudiu@fitlab.fr",
-                    description: "Professionnel",
-                    balance: 5000,
-                })
+                const newCleverCustomer = new CustomerModel(req.body)
                 await newCleverCustomer.save();
                 
                 //? Création d'un utilisateur en base de données Stripe
                 const newCustomer = await stripe.customers
-                .create ({
-                    name: "Claudiu",
-                    phone: "+33 769875425",
-                    email: "claudiu@fitlab.fr",
-                    description: "Professionnel",
-                })
+                .create (req.body)
                 
                 res.json({success: true, result: newCustomer})
             } 
@@ -177,11 +165,27 @@ module.exports = {
 
         retrieve: async (req, res, next) => {
             try {
+                const customer = req.body.data.customerId;
                 
-                const customer = await stripe.customers
-                .retrieve("cus_JQG6G02ZZiFaml");
+                const customerFinded = await stripe.customers
+                    .retrieve(customer);
                 
-                res.json({success: true, result: customer})
+                return res.json({success: true, result: customerFinded})
+                
+            } 
+            
+            catch (error) {
+                next(error);
+            }
+        },
+
+        retrieveAll: async (req, res, next) => {
+
+            try {
+                
+                const customers = await stripe.customers.list();
+                
+                return res.json({ success: true, result: customers })
                 
             } 
             
@@ -194,17 +198,7 @@ module.exports = {
             try {
                 
                 const editedCustomer = await stripe.customers
-                .update("cus_JQG6G02ZZiFaml", 
-                {
-                    address: {
-                        city: "Rennes",
-                        country: "France",
-                        state: "Bretagne",
-                        postal_code: 35000,
-                    },
-                    balance: 15000,
-                    description: "Professionnel du milieu sportif",
-                });
+                .update(req.body.idCustomer, req.body.data);
                 
                 res.json({success: true, result: editedCustomer})
                 
@@ -214,5 +208,151 @@ module.exports = {
                 next(error);
             }
         }
+    },
+    
+    prices: {
+        retrieve: async (req, res, next) => {
+
+            try {
+                const price = req.body.data.priceId;
+
+                const pricesObject = await stripe.prices
+                    .retrieve("price_1Is2XMLG9PLRTQCEKWFclXzD")
+
+                return res.json({ success: true, result: pricesObject})
+                
+            } catch (error) {
+                console.log("ERREUR RENVOYEE PAR PRICES OBJECT =>", error);
+                next(error);
+            }
+
+        
+        },
+        retrieveAll: async (req, res, next) => {
+        
+            try {
+
+                const pricesObjects = await stripe.prices.list()
+
+                return res.json({ success: true, result: pricesObjects})
+                
+            } catch (error) {
+                console.log("ERREUR RENVOYEE PAR PRICES OBJECT =>", error);
+                next(error);
+            }
+
+        
+        }
+    },
+    
+    products: {
+        retrieveAll: async (req, res, next) => {
+        
+            try {
+
+                const productObjects = await stripe.products.list()
+
+                return res.json({ success: true, result: productObjects})
+                
+            } catch (error) {
+                console.log("ERREUR RENVOYEE PAR PRODUCT OBJECT =>", error);
+                next(error);
+            }
+
+        
+        }
+    },
+    
+    sessions: {
+        //? Méthode : https://stripe.com/docs/billing/subscriptions/checkout le paiement sera effectué via un formulaire Stripe généré automatiquement pas customisé.
+        create: async (req, res, next) => {
+            //? Récupération de l'identifiant de "l'objet Prices" du produit que le client a l'intention d'acheter, envoyé depuis le front lors de l'appel sur cette API
+            const {customerId, productPriceObjectId} = req.body.data;
+
+            try {
+                //? La session doit être créée avant d'arriver sur la page du formulaire de paiement
+                const checkoutSession = await stripe.checkout.sessions
+                    .create({
+                        //? Lors de la redirection en cas de succès du paiement, l'id de session du client est renvoyé dans l'url
+                        //! Propriété requise
+                        success_url: 'http://localhost:3000/payment-success?session_id={CHECKOUT_SESSION_ID}',
+                        //! Propriété requise
+                        cancel_url: 'http://localhost:3000/payment-cancel',
+                        //! Propriété requise
+                        mode: 'subscription',
+                        //! Propriété requise
+                        payment_method_types: ['card'],
+                        
+                        //? Propriété optionnelle
+                        //? Cette propriété fait référence à la liste d'articles que le client veut acheter : https://stripe.com/docs/api/checkout/sessions/create?lang=node#create_checkout_session-line_items
+                        //? Ca peut tout aussi bien être des produits avec un paiement récurent (abonnements) que ponctuel (paiement une seul fois lors de l'achat)
+                        //? Chaque produit est renseigné dans un tableau d'objet contenant deux propriétés : 
+                        //?   -   L'identifiant de "l'objet Prices" du produit                    
+                        //?   -   La quantité de ce produit souhaité par le client                    
+                        line_items: [
+                            
+                            //? Lorsque le client arrive sur la page de paiement, on est censé récupérer l'identifiant de "l'objet Prices" du produit, et l'envoyer au back lors de l'arrivé du client sur cette page afin d'initialiser la session de paiement 
+                            {price: productPriceObjectId, quantity: 16}, //? Prix dégressif appliqué car achat de 5+ programmes
+                            // {price: "price_1IqEyTLG9PLRTQCEomPMKKzD", quantity: 1}
+                        
+                        ],
+                        //? Propriété optionnelle
+                        customer: customerId
+
+                    })
+
+                return res.json({ success: true, result: checkoutSession, sessionId: checkoutSession.id})
+                
+            } catch (error) {
+                console.log("[BACK] Erreur émise lors de l'appel sur l'api création Session =>",error.message);
+                next(error);
+            }
+        },
+
+        retrieveAll: async (req, res, next) => {
+            
+            try {
+                const checkoutSessions = await stripe.checkout.sessions.list();
+        
+                return res.json({succes: true, results: checkoutSessions})
+            }
+
+            catch (err) {
+                console.log(err);
+                next(err);
+            }
+            
+        }
+
+
+    },
+
+    subscriptions: {
+        create: async (req, res, next) => {
+            try {
+                
+                const newSubscription = await stripe.subscriptions.create({
+
+                }) 
+
+            } catch (error) {
+                console.log("ERREUR RENVOYEE PAR SUBSCRIPTIONS OBJECT =>", error);
+            }    
+        },
+
+        retrieveAll: async (req, res, next) => {
+            
+            try {
+                const activeSubscriptionList = await stripe.subscriptions.list();
+
+                return res.json({ success: true, subscriptionList: activeSubscriptionList})
+                    
+            } catch (error) {
+                console.log(error);
+                next(error);
+            }
+        
+        }
     }
+
 };
