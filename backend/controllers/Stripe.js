@@ -353,6 +353,46 @@ module.exports = {
             }
         
         }
-    }
+    }, 
+        
+    webhook:  (req, res, next) => {
 
+        //? Traitement des données reçues de Stripe dans la requête émise sur cette API
+        //? L'Objet reçu sera un Event Object : https://stripe.com/docs/api/events
+        const stripEventEmited = req.body;
+        
+        //? Traitement en fonction des différents événements que l'on souhaite écouter 
+        //? #1 Liste complète des différents types d'événements pouvant être émis par Strip : https://stripe.com/docs/api/events/types 
+        //? #2 Liste des événements avec possibilité de configurer des webhook également depuis le Dashboard : https://dashboard.stripe.com/test/webhooks
+        
+        switch (stripEventEmited.type) {
+            case "invoice.payment_failed":
+                //? Si le paiement échoue ou méthode de paiement invalide, notifier le client de l'échec et redemander à nouveau les info CB
+                console.log("Votre paiement à échoué, veuillez rentrez à nouveau votre numéro de carte bancaire !");
+
+            case "invoice.paid":
+                //? On pourra s'appuyer sur cet événement pour : 
+                //?    -   Gérer l'état de paiement sur l'autentification 3D
+                //?    -   Gérer l'accès au contenu "abonnés" en stockant l'information en base de données
+                console.log("Votre paiement à échoué, veuillez rentrez à nouveau votre numéro de carte bancaire !");
+
+
+            case "checkout.session.async_payment_succeeded":
+                console.log("Session de paiement finie, paiement validé !");
+
+            case "payment_intent.succeeded":
+                console.log("Intention de paiement confirmée, paiement validé !");
+            
+            case "customer.created":
+                console.log("Creation de l'utilisateur réussie ! Mais écouter cet événement n'est pas utile, la réussite de cette action retourne déjà un objet Customer de manière synchrone");
+
+            case "customer.subscription.created":
+                //? Trouver comment obtenir la référence à l'objet parent globlae pour utiliser customers.retrieve, ce qui permettra d'obtenir le nom du client
+                console.log(`Création de l'abonnement pour l'utilisateur ${stripEventEmited.data.object.id} réussie`);
+
+        }
+
+        res.sendStatus(200)
+    }
+    
 };

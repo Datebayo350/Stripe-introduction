@@ -24,6 +24,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());
 
+//! WebHook
+app.post("/webhook", StripeController.webhook);
+
 //! Intents (intentions de paiement)
 app.post('/api/intents/create', StripeController.intents.create);
 app.get('/api/intents/retrieve', StripeController.intents.retrieve);
