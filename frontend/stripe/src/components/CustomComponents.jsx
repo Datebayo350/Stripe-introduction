@@ -5,7 +5,7 @@ export const Field = (props) => {
     
     return (
         <div className=" p-2 pt-0 pl-0 border-b border-red-800 border-opacity-25 flex mt-0"> 
-            <label htmlFor={nameId} className="m-2 text-red-50 font-bold flex-none"> {children} </label>
+            <label htmlFor={nameId} className="m-2 text-black font-bold flex-none"> {children} </label>
             <input type={type} name={nameId} id={nameId} placeholder={placeholder} value={valueFromState} onChange={onChange} className="border-none focus:outline-none text-white font-bold bg-transparent placeholder-red-100 flex-grow"/>
         </div>
     )

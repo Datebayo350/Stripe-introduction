@@ -1,4 +1,7 @@
-.active {
+
+body {
+  content: border-box;
+}.active {
   background-color: #8de2de;
   color: black;
 }
@@ -68,3 +71,21 @@ input::placeholder {
   color: white;
 
 }
+
+.card {
+  background-color: #bd4d45;
+  background-clip: content-box;
+  background-size: 100% 100%;
+  max-height: 860px;
+}
+
+h3 {
+  text-transform: uppercase;
+  font-family: 'Righteous', cursive;
+}
+
+.disabled {
+  background-color: rgb(192, 192, 192);
+  opacity:0.5;
+}
+/* <button onClick={createCheckoutSession} className="button max-h-12 max-w-xs text-white p-4 font-bold rounded-lg shadow-xl mt-40" > {totalAmountToPay > 0 ? `Payer ${totalAmountToPay} €`: "Payer  mes produits"} </button> */
