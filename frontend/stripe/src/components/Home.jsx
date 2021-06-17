@@ -135,7 +135,38 @@ const Home = () => {
             setEuro(108)
         }
     }
-    
+
+    const setCounterQuantity = (e) => {
+        //? Chaîne de caractère contenant les valeurs des attributs du bouton cliqué
+        const productName = e.target.outerHTML;
+        //? On découpe la chaîne
+        const arrayProductName = productName.split(" ");
+        //? CLique sur le bouton plus ou sur le bouton moins ?
+        const plusOUmoins = e.target.attributes.value.textContent;
+        
+        //? Determine le nom de l'abonnement : Premium ou Silver, qui permettra d'agir sur le counter associé
+        if (arrayProductName[4] === "Premium") {
+            if (plusOUmoins === "plus") {
+
+                if (premiumCounter >= 0) { setPremiumCounter(premiumCounter + 1) }
+
+            } else {
+                if (premiumCounter >= 1) { setPremiumCounter(premiumCounter - 1) }
+            }
+
+        } else {
+            console.log(silverCounter);
+            if (plusOUmoins === "plus") {
+
+                if (silverCounter >= 0) { setSilverCounter(silverCounter + 1) }
+
+            } else {
+
+                if (silverCounter >= 1) { setSilverCounter(silverCounter - 1) }
+            }
+        }
+    };
+
     return (
 
         <div className="flex items-center flex-col h-80 mt-20 ">
