@@ -156,6 +156,7 @@ const Home = () => {
 
         } else {
             console.log(silverCounter);
+
             if (plusOUmoins === "plus") {
 
                 if (silverCounter >= 0) { setSilverCounter(silverCounter + 1) }
@@ -166,6 +167,19 @@ const Home = () => {
             }
         }
     };
+
+    //? Stock le nom de l'abonnement choisi
+    const selectedSubscription = (e) => {
+
+        const subscriptionType = e.target.innerHTML;
+        const decomposeSubscriptionName = subscriptionType.split(" ");
+        const premiumORsilver = decomposeSubscriptionName[1];
+        setDisabled(true);
+
+        premiumORsilver === "Silver" ? setSubscriptionSelected("Silver") : setSubscriptionSelected("Premium");
+
+        calculatePricePerSubscription();
+    }
 
     return (
 
