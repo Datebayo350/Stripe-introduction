@@ -114,6 +114,28 @@ const Home = () => {
         getProducts();
     }, [euro])
 
+    const calculatePricePerSubscription = _ => {
+        if (premiumCounter !== 0) {
+            
+            //? On determine le prix par abonnement par palier en fonction de la quantitée choisie par le client
+            
+            if (premiumCounter >= 15) {
+                setEuro(5);
+            }
+            else if (premiumCounter >= 6) {
+                setEuro(10);
+
+            } else {
+                setEuro(15);
+            }
+
+        } else {
+
+            //? Si premiumCounter = 0, cela voudra dire que le client s'est dirigé vers l'abonnement silver
+            setEuro(108)
+        }
+    }
+    
     return (
 
         <div className="flex items-center flex-col h-80 mt-20 ">
