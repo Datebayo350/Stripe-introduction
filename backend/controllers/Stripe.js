@@ -250,7 +250,7 @@ module.exports = {
         
             try {
 
-                const productObjects = await stripe.products.list()
+                const productObjects = await stripe.products.list({active: true});
 
                 return res.json({ success: true, result: productObjects})
                 
