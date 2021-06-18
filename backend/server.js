@@ -14,7 +14,7 @@ try {
         useCreateIndex: true, 
         autoIndex: true,
     })
-    console.log("Connexion database réussie !");
+   console.log("Connexion database réussie !");
 } catch (error) {
     console.log(error);
 }

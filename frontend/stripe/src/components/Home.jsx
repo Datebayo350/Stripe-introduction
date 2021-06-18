@@ -6,6 +6,7 @@ import "./../App.css"
 const Home = () => {
 
     const [productPrice, setProductPrice] = useState(0);
+    //? Il faudra créer un système de récupération des informations du client une fois connecté, on le stockera ici
     const [customer, setCustomer] = useState('');
     const [susbscriptionSelected, setSubscriptionSelected] = useState('');
     const [paymentMethodId, setPaymentMethodId] = useState('');
@@ -25,6 +26,7 @@ const Home = () => {
     const [silverImage, setSilverImage] = useState("");
     const [silverCounter, setSilverCounter] = useState(0);
     const [silverPriceId, setSilverPriceId] = useState("");
+    const [disabled, setDisabled] = useState(false);
     const stripe = useStripe();
     //? Possibilité d'appeler api price.retrieveAll pour obtenire la liste des prix (tarif), et sortir le prix voulu, sinon => Dashboard
 
@@ -43,11 +45,11 @@ const Home = () => {
                 const prices = await axios.get("http://localhost:5000/api/prices/retrieveAll");
                 const premiumPrice = prices.data.result.data.find(premium => premium.nickname === "FitLab Premium - Abonnement dégréssif")
                 const silverPrice = prices.data.result.data.find(premium => premium.nickname === "FitLab Silver - Abonnement Semestrielle")
-                
+
                 const products = await axios.get("http://localhost:5000/api/products/retrieveAll");
-                const premiumProd = products.data.result.data.find( premium => premium.name === "Fitlab - Abonnement Premium (prix dégréssif)")
-                const silverProd = products.data.result.data.find( premium => premium.name === "Fitlab - Abonnement Silver")
-                
+                const premiumProd = products.data.result.data.find(premium => premium.name === "Fitlab - Abonnement Premium (prix dégréssif)")
+                const silverProd = products.data.result.data.find(premium => premium.name === "Fitlab - Abonnement Silver")
+
                 const premiumPrcId = premiumPrice.data.result.id;
                 const premiumProdImage = premiumProd.data.result.images
                 const premiumProdName = premiumProd.data.result.name
@@ -114,11 +116,12 @@ const Home = () => {
         getProducts();
     }, [euro])
 
+    //? Calcule (particulièrement pour les abonnements par palier) le montant par abonnement 
     const calculatePricePerSubscription = _ => {
         if (premiumCounter !== 0) {
-            
+
             //? On determine le prix par abonnement par palier en fonction de la quantitée choisie par le client
-            
+
             if (premiumCounter >= 15) {
                 setEuro(5);
             }
@@ -134,8 +137,9 @@ const Home = () => {
             //? Si premiumCounter = 0, cela voudra dire que le client s'est dirigé vers l'abonnement silver
             setEuro(108)
         }
-    }
+    };
 
+    //? Stock la quantité d'abonnements choisis
     const setCounterQuantity = (e) => {
         //? Chaîne de caractère contenant les valeurs des attributs du bouton cliqué
         const productName = e.target.outerHTML;
@@ -143,7 +147,7 @@ const Home = () => {
         const arrayProductName = productName.split(" ");
         //? CLique sur le bouton plus ou sur le bouton moins ?
         const plusOUmoins = e.target.attributes.value.textContent;
-        
+
         //? Determine le nom de l'abonnement : Premium ou Silver, qui permettra d'agir sur le counter associé
         if (arrayProductName[4] === "Premium") {
             if (plusOUmoins === "plus") {
@@ -179,6 +183,28 @@ const Home = () => {
         premiumORsilver === "Silver" ? setSubscriptionSelected("Silver") : setSubscriptionSelected("Premium");
 
         calculatePricePerSubscription();
+    };
+
+    const handlePayThisPrice = (e) => {
+
+        if (totalAmountToPay > 0) {
+            if (selectedSubscription === "Premium") {
+
+                //? Cet objet regroupe l'intégralité des données nous permettant de créer une objet "Subscription" voir doc : https://stripe.com/docs/api/subscriptions/create.
+                //? La création de l'abonnement devra se faire au moment du paiement, si celui-ci n'échoue pas (on devra donc écouter les webhooks). 
+                //? Cependant le formulaire de paiement ne se trouve pas sur cette page, deux possibilités sont envisageables : 
+                //?     - 1) Transférer le formulaire de paiement sur cette page afin de pouvoir accéder aux informations de customerPurchaseData
+                //?     - 2) Mettre en place un state pour l'application, afin de pouvoir accéder aux données depuis n'importe quelle page ( cette option sera retenue, Redux : https://redux.js.org/ ou les hook useReducer: https://fr.reactjs.org/docs/hooks-reference.html#usereducer ainsi que useContext: https://fr.reactjs.org/docs/hooks-reference.html#usecontext feront très bien l'affaire 
+                
+                setCustomerPurchaseData({ customer, premiumPriceId, productQuantity });
+            } else {
+
+                setCustomerPurchaseData({ customer, silverPriceId, productQuantity });
+
+            }
+        }
+        //? Redirection vers le formulaire de paiement
+        history.push("/checkout-form")
     }
 
     return (
@@ -188,6 +214,7 @@ const Home = () => {
             <button className=" button max-h-12 max-w-xs text-white p-4 font-bold rounded-lg shadow-xl  mt-40" > {productPrice > 0 ? `Payer ${productPrice} €` : `Payer  mes produits`} </button>
         </div>
     )
+
 }
 
 export default Home;
