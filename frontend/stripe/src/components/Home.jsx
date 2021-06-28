@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
 import { useStripe } from "@stripe/react-stripe-js"
+import { useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
+import axios from "axios";
+import CustomCard from "./CustomCard"
 import "./../App.css"
 
 const Home = () => {
@@ -14,6 +16,7 @@ const Home = () => {
     const [productQuantity, setProductQuantity] = useState('');
     const [euro, setEuro] = useState(0);
     const [customerPurchaseData, setCustomerPurchaseData] = useState([]);
+    const [pricesData, setPricesData] = useState([]);
 
     const [premiumProductName, setPremiumProductName] = useState("");
     const [premiumProductId, setPremiumProductId] = useState("");
@@ -26,9 +29,10 @@ const Home = () => {
     const [silverImage, setSilverImage] = useState("");
     const [silverCounter, setSilverCounter] = useState(0);
     const [silverPriceId, setSilverPriceId] = useState("");
+    
     const [disabled, setDisabled] = useState(false);
+    const history = useHistory();
     const stripe = useStripe();
-    //? Possibilité d'appeler api price.retrieveAll pour obtenire la liste des prix (tarif), et sortir le prix voulu, sinon => Dashboard
 
     useEffect(() => {
 
@@ -38,28 +42,34 @@ const Home = () => {
         //? Récupération des informations produit (Nom, Prix, Image) nous permettant de construire les cards d'affichage
         const getProducts = async () => {
 
-            //? Possibilité d'appeler api price.retrieveAll pour obtenire la liste des prix (tarif), et sortir le prix voulu, sinon récupération depuis le Dashboard
+            //? Possibilité d'appeler api price.retrieveAll pour obtenir la liste des prix (tarif), et sortir le prix voulu, sinon récupération depuis le Dashboard
             setPremiumPriceId("price_1ItC4zLG9PLRTQCEN8TrdSEG");
 
             try {
+                
+                //? Liste des objets "Prices"
+                //! ATTENTION : L'objet "Plans" est similaire à "Prices" cependant il n'est plus d'actualité, il faudra donc éviter de l'utiliser : https://stripe.com/docs/api/plans
                 const prices = await axios.get("http://localhost:5000/api/prices/retrieveAll");
+                
+                //? Récupération de l'Objet "Prices" Premium, qui sera associé à l'objet "Products" Premium égallement => : https://stripe.com/docs/api/prices/object
                 const premiumPrice = prices.data.result.data.find(premium => premium.nickname === "FitLab Premium - Abonnement dégréssif")
                 const silverPrice = prices.data.result.data.find(premium => premium.nickname === "FitLab Silver - Abonnement Semestrielle")
-
+                
+                //? Liste des objets "Products"
                 const products = await axios.get("http://localhost:5000/api/products/retrieveAll");
                 const premiumProd = products.data.result.data.find(premium => premium.name === "Fitlab - Abonnement Premium (prix dégréssif)")
                 const silverProd = products.data.result.data.find(premium => premium.name === "Fitlab - Abonnement Silver")
 
-                const premiumPrcId = premiumPrice.data.result.id;
-                const premiumProdImage = premiumProd.data.result.images
-                const premiumProdName = premiumProd.data.result.name
+                const premiumPrcId = premiumPrice.id;
+                const premiumProdImage = premiumProd.images
+                const premiumProdName = premiumProd.name
                 setPremiumPriceId(premiumPrcId)
                 setPremiumImage(premiumProdImage);
                 setPremiumProductName(premiumProdName);
 
-                const silverPrcId = silverPrice.data.result.id;
-                const silverProdImage = silverProd.data.result.images
-                const silverProdName = silverProd.data.result.name
+                const silverPrcId = silverPrice.id;
+                const silverProdImage = silverProd.images
+                const silverProdName = silverProd.name
                 setSilverPriceId(silverPrcId)
                 setSilverImage(silverProdImage);
                 setSilverProductName(silverProdName);
@@ -89,7 +99,7 @@ const Home = () => {
                     ]
                 }
 
-                //? On part du principe que l'on a récupéré
+                //? On part du principe que l'on a récupéré les informations de l'objet silver
                 const oneTimePurchase = {
                     product: "silver",
                     oneTime: {
@@ -98,7 +108,7 @@ const Home = () => {
                 };
 
                 //? Méthode 1 : Préférer celle-là
-                setCustomerPurchaseData([oneTimePurchase, subscriptionPurchasePrices]);
+                setPricesData([oneTimePurchase, subscriptionPurchasePrices]);
 
                 //? Méthode 2
                 // customerPurchaseData.push(subscription_purchase); 
@@ -111,7 +121,10 @@ const Home = () => {
             catch (e) {
                 console.log("Erreur useEffect =>", e);
             }
-
+            
+            //? Une fois qu'un produit a été associé à un prix ( et non l'inverse, la création d'un produit final se fait toujours dans ce sens ) on pourra le retrouver dans la liste des produits dans le dashboard : https://dashboard.stripe.com/test/products
+            
+            //? Exemple de creation d'un produit en ligne de commande  (Uniquement point 3): https://stripe.com/docs/billing/subscriptions/per-seat#create-business-model
         }
         getProducts();
     }, [euro])
@@ -185,6 +198,7 @@ const Home = () => {
         calculatePricePerSubscription();
     };
 
+    //? Gère le comportement une fois que l'on click sur le bouton du montant totale à payer
     const handlePayThisPrice = (e) => {
 
         if (totalAmountToPay > 0) {
@@ -202,17 +216,30 @@ const Home = () => {
                 setCustomerPurchaseData({ customer, silverPriceId, productQuantity });
 
             }
+            //? Redirection vers le formulaire de paiement
+            history.push("/checkout-form")
         }
-        //? Redirection vers le formulaire de paiement
-        history.push("/checkout-form")
     }
-
     return (
 
-        <div className="flex items-center flex-col h-80 mt-20 ">
-            <h1 className=" max-h-12 max-w-xs font-bold text-white text-center text-3xl"> Home </h1>
-            <button className=" button max-h-12 max-w-xs text-white p-4 font-bold rounded-lg shadow-xl  mt-40" > {productPrice > 0 ? `Payer ${productPrice} €` : `Payer  mes produits`} </button>
-        </div>
+        <>
+            <div className="flex flex-col mt-3 items-center min-h-screen">
+                <div className="container mt-10 p-14 mx-auto min-h-full flex justify-center">
+
+                    {pricesData.length > 0 &&
+
+                        <>
+                            <CustomCard productName={premiumProductName} productImage={premiumImage} counter={premiumCounter} pricesData={pricesData[1]} disabled={disabled} onClickCounter={setCounterQuantity} onClickSubscription={selectedSubscription} />
+                            
+                            <CustomCard productName={silverProductName} productImage={silverImage} counter={silverCounter} pricesData={pricesData[0]} disabled={disabled} onClickCounter={setCounterQuantity} onClickSubscription={selectedSubscription} />
+                        </>
+                    }
+
+                </div>
+                <button onClick={handlePayThisPrice} className="button max-h-12 max-w-xs text-white p-4 font-bold rounded-lg shadow-xl -my-12" > {totalAmountToPay > 0 ? `Payer ${totalAmountToPay} €` : "Payer  mes produits"} </button> 
+            </div>
+
+        </>
     )
 
 }
