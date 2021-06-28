@@ -39,8 +39,11 @@ const CustomCard = (props) => {
             </div>
 
             <div className="flex justify-center p-1">
-              
+                <button name={productName} value="moins" disabled={disabled ? disabled : null} onClick={disabled ? null : onClickCounter}
+                        className={disabled ? "disabled button mt-4 w-1/5 m-2 rounded-md text-2xl text-center h-8" : "button mt-4 w-1/5 m-2 rounded-md text-2xl text-center h-8"}>-</button>
+                
                 <p className="mt-4 text-xl">
+                    
                { pricesData.subscription ? "Premium x " : "Silver x " }
                  {counter}</p>
                 <button name={productName} value="plus" disabled={disabled ? disabled : null} onClick={disabled ? null : onClickCounter}
@@ -56,6 +59,5 @@ const CustomCard = (props) => {
 
     )
 };
-
 
 export default CustomCard;
