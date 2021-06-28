@@ -6,12 +6,15 @@ import {
 
 import { CheckoutForm, Success, Cancel, Home, CustomNavbar } from "./components";
 import { appReducer } from "./__reducers__";
+import { appState } from "./__states__";
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import "./App.css"
 
 //? Crée une instance de l'objet Stripe : https://stripe.com/docs/js/initializing  nous permettant par la suite d'accéder à l'api entière de Stripe.JS
+
 const stripePromise = loadStripe(process.env.REACT_APP_PUBLIC_API_KEY);
+
 function App() {
   return (
 
