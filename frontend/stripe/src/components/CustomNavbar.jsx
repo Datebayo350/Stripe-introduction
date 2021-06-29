@@ -8,6 +8,7 @@ const CustomNavbar = () => {
             <CustomLink path='/payment-success'> Success </CustomLink>
             <CustomLink path='/payment-cancel'> Cancel </CustomLink>
             <CustomLink path='/checkout-form'> Checkout Form </CustomLink>
+            <CustomLink path='/login'> Login </CustomLink>
         </nav>
     )
 }

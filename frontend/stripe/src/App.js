@@ -3,7 +3,11 @@ import {
   Switch,
   Route,
 } from "react-router-dom";
+<<<<<<< HEAD
 import { useReducer, useContext } from "react";
+=======
+import { useReducer } from "react";
+>>>>>>> 414c1416... [FRONT] Login component created
 import { CheckoutForm, Success, Cancel, Home, CustomNavbar, Login } from "./components";
 import { appReducer } from "./__reducers__";
 import { appContext } from "./__contexts__";
@@ -23,7 +27,6 @@ function App() {
   //? le Reducer reçoit en paramètre l'état initial de l'application (appState) et une action (émise par la fonction "dispatch"), en fonction de ces deux paramètres il calculera et retournera un nouveau state  
 
   const [state, dispatch] = useReducer(appReducer, appState);
-  
   return (
     <appContext.Provider value={state}>
       <Elements stripe={stripePromise}>
@@ -34,7 +37,7 @@ function App() {
             <Route path="/payment-success" exact={true} component={Success} />
             <Route path="/checkout-form" exact={true} component={CheckoutForm} />
             <Route path="/payment-cancel" exact={true} component={Cancel} />
-             {/* <Route path="/login" exact={true} component={Login} /> */}
+            <Route path="/login" exact={true} component={Login} />
           </Switch>
         </Router>
       </Elements>
