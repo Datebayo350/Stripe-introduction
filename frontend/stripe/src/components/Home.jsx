@@ -23,14 +23,13 @@ import CustomCard from "./CustomCard"
 import "./../App.css"
 
 const Home = () => {
-
+    const history = useHistory();
     const globalContext = useContext(appContext);
     const {state, dispatch} = globalContext;
 
     useEffect(() => {
-
         //? Calcul du montant total à payer en fonction de l'abonnement choisi
-        state.premiumProductCounter > 0 ? dispatch({ type: RECORD_TOTAL_AMOUNT_TO_PAY, payload: state.premiumProductCounter * state.euro }) : dispatch({ type: "RECORD_TOTAL_AMOUNT_TO_PAY", payload: state.silverProductCounter * state.euro });
+        state.premiumProductCounter > 0 ? dispatch({ type: RECORD_TOTAL_AMOUNT_TO_PAY, payload: state.premiumProductCounter * state.euroPerSeat }) : dispatch({ type: RECORD_TOTAL_AMOUNT_TO_PAY, payload: state.silverProductCounter * state.euroPerSeat });
         
         //? Récupération des informations produit (Nom, Prix, Image) nous permettant de construire les cards d'affichage
         const getProducts = async () => {
@@ -122,7 +121,7 @@ const Home = () => {
             //? Exemple de creation d'un produit en ligne de commande  (Uniquement point 3): https://stripe.com/docs/billing/subscriptions/per-seat#create-business-model
         }
         getProducts();
-    },[state.euro])
+    },[state.euroPerSeat])
 
     // //? Calcule (particulièrement pour les abonnements par palier) le montant par abonnement 
     const calculatePricePerSubscription = _ => {
@@ -192,16 +191,20 @@ const Home = () => {
         const subscriptionType = e.target.innerHTML;
         const decomposeSubscriptionName = subscriptionType.split(" ");
         const premiumORsilver = decomposeSubscriptionName[1];
-        //! Enregistrement du choix de l'abonnement- version Reducer
         premiumORsilver === "Silver" ? dispatch({ type: RECORD_SUBSCRIPTION_SELECTED, payload: { subscription: "Silver", objectPriceId: state.silverPriceId, productQuantity: state.silverProductCounter } }) : dispatch({ type: RECORD_SUBSCRIPTION_SELECTED, payload: { subscription: "Premium", objectPriceId: state.premiumPriceId, productQuantity: state.premiumProductCounter } })
 
         calculatePricePerSubscription();
     };
 
     //? Gère le comportement une fois que l'on click sur le bouton du montant totale à payer
-    const handlePayThisPrice = (e) => {
-
+    const handlePayThisPrice = _=> {
+        if (state.totalAmountToPay > 0 && state.disabled) {
+            history.push("/checkout-form")
+        }else{
+            console.log("Il faut choisir un abonnement");
+        }
     }
+    
 
     return (
         <>
