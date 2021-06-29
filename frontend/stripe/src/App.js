@@ -3,11 +3,7 @@ import {
   Switch,
   Route,
 } from "react-router-dom";
-<<<<<<< HEAD
-import { useReducer, useContext } from "react";
-=======
 import { useReducer } from "react";
->>>>>>> 414c1416... [FRONT] Login component created
 import { CheckoutForm, Success, Cancel, Home, CustomNavbar, Login } from "./components";
 import { appReducer } from "./__reducers__";
 import { appContext } from "./__contexts__";
@@ -28,6 +24,7 @@ function App() {
 
   const [state, dispatch] = useReducer(appReducer, appState);
   return (
+    
     <appContext.Provider value={state}>
       <Elements stripe={stripePromise}>
         <Router>
@@ -42,6 +39,7 @@ function App() {
         </Router>
       </Elements>
     </appContext.Provider>
+
   );
 }
 
