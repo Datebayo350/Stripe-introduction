@@ -126,7 +126,35 @@ const Home = () => {
 
     // //? Calcule (particulièrement pour les abonnements par palier) le montant par abonnement 
     const calculatePricePerSubscription = _ => {
-   
+    //TODO : Gérer le fait de cibler la quantité uniquement de l'abonnement selectionné, si j'incrémente le counter premuim ainsi que le silver et que je fini par choisir le silver, on rentrera dans la 1ère condition => Pas voulu
+        if (state.premiumCounter !== 0 && state.silverCounter === 0) {
+            if (state.premiumCounter >= 15) {
+                dispatch({ type: RECORD_EURO_PER_SEAT, payload: 5 });
+                dispatch({ type: RECORD_PRODUCT_QUANTITY, payload: state.premiumCounter });
+                console.log("15 ou SUPP");
+
+            }
+            else if (state.premiumCounter >= 6) {
+                dispatch({ type: RECORD_EURO_PER_SEAT, payload: 10 });
+                dispatch({ type: RECORD_PRODUCT_QUANTITY, payload: state.premiumCounter });
+
+                console.log("6 OU SUPP");
+
+            } else {
+                dispatch({ type: RECORD_EURO_PER_SEAT, payload: 15 });
+                dispatch({ type: RECORD_PRODUCT_QUANTITY, payload: state.premiumCounter });
+
+                console.log("5 OU MOINS");
+            }
+        } else if (state.silverCounter !==0 && state.premiumCounter === 0 ) {
+            dispatch({ type: RECORD_EURO_PER_SEAT, payload: 108 })
+            dispatch({ type: RECORD_PRODUCT_QUANTITY, payload: state.silverCounter });
+
+        } else {
+            console.log("Les deux counteur ont une valeur, il faut celui qui n'est pas le choix finale à 0");
+            //? Normalement à cet étape le bouton de selection de l'abonnement est désactivé / grisén on va donc le ré-activer pour respecter la consigne : choisir un seul abonnement.
+            dispatch({ type: SET_DISABLED});
+        }
     };
 
     //? Stock la quantité d'abonnements choisis
