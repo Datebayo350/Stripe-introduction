@@ -23,7 +23,8 @@ const Home = () => {
     useEffect(() => {
 
         //? Calcul du montant total à payer en fonction de l'abonnement choisi
-
+        state.premiumCounter > 0 ? dispatch({ type: RECORD_TOTAL_AMOUNT_TO_PAY, payload: state.premiumCounter * state.euro }) : dispatch({ type: "RECORD_TOTAL_AMOUNT_TO_PAY", payload: state.silverCounter * state.euro });
+        
         //? Récupération des informations produit (Nom, Prix, Image) nous permettant de construire les cards d'affichage
         const getProducts = async () => {
 
