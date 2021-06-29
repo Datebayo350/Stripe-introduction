@@ -48,19 +48,16 @@ export const appReducer = (previousState, action) => {
         subscriptionSelected: action.payload.subscription,
         //? Désactive les boutons de selection abonnement une fois l'un d'entre eux choisit
         //? Désactive le bouton de paiement finale après avoir déjà cliqué dessus 1 fois 
-        disabled: true,
         productQuantity: action.payload.productQuantity,
-        euro: action.payload.euro,
         //! L'enregistrement de la propriété productQuantity risque de ne pas passer étant donné qu'on se base sur le previous.state et que la propriété du même nom dans le state est définie ici
-        customerPurchaseData: { customerId: previousState.customer.id, productPriceObject: action.payload.objectPriceId, productQuantity: action.payload.productQuantity }
+        customerPurchaseData: { customerId: previousState.customerData.id, productPriceObject: action.payload.objectPriceId, productQuantity: action.payload.productQuantity }
       };
     
-    //! Surrêment pas utile
     case "RECORD_EURO_PER_SEAT":
 
       return {
         ...previousState,
-        euro: action.payload
+        euroPerSeat: action.payload
       };
 
     //! Surrêment pas utile

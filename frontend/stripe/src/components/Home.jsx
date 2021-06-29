@@ -133,24 +133,15 @@ const Home = () => {
                 dispatch({ type: SET_DISABLED});
                 dispatch({ type: RECORD_EURO_PER_SEAT, payload: 5 });
                 dispatch({ type: RECORD_PRODUCT_QUANTITY, payload: state.premiumProductCounter });
-                console.log("15 ou SUPP");
-
             }
             else if (state.premiumProductCounter >= 6) {
                 dispatch({ type: SET_DISABLED});
                 dispatch({ type: RECORD_EURO_PER_SEAT, payload: 10 });
                 dispatch({ type: RECORD_PRODUCT_QUANTITY, payload: state.premiumProductCounter });
-
-                console.log("6 OU SUPP");
-
             } else {
-                console.log("DISABLED VAUT =>", state.disabled);
-                console.log("SON CONTRAIRE =>", !state.disabled);
                 dispatch({ type: SET_DISABLED});
                 dispatch({ type: RECORD_EURO_PER_SEAT, payload: 15 });
                 dispatch({ type: RECORD_PRODUCT_QUANTITY, payload: state.premiumProductCounter });
-
-                console.log("5 OU MOINS");
             }
         } else if (state.silverProductCounter !==0 && state.premiumProductCounter === 0 ) {
             dispatch({ type: SET_DISABLED});
@@ -158,9 +149,7 @@ const Home = () => {
             dispatch({ type: RECORD_PRODUCT_QUANTITY, payload: state.silverProductCounter });
 
         } else {
-            console.log("Les deux counteur ont une valeur, il faut celui qui n'est pas le choix finale à 0");
-            //? Normalement à cet étape le bouton de selection de l'abonnement est désactivé / grisén on va donc le ré-activer pour respecter la consigne : choisir un seul abonnement.
-            // dispatch({ type: SET_DISABLED});
+            console.log("Les deux counteur ont une valeur, il faut que celui qui n'est pas le choix finale soit à 0");
         }
     };
 
@@ -203,7 +192,8 @@ const Home = () => {
         const subscriptionType = e.target.innerHTML;
         const decomposeSubscriptionName = subscriptionType.split(" ");
         const premiumORsilver = decomposeSubscriptionName[1];
-        
+        //! Enregistrement du choix de l'abonnement- version Reducer
+        premiumORsilver === "Silver" ? dispatch({ type: RECORD_SUBSCRIPTION_SELECTED, payload: { subscription: "Silver", objectPriceId: state.silverPriceId, productQuantity: state.silverProductCounter } }) : dispatch({ type: RECORD_SUBSCRIPTION_SELECTED, payload: { subscription: "Premium", objectPriceId: state.premiumPriceId, productQuantity: state.premiumProductCounter } })
 
         calculatePricePerSubscription();
     };
