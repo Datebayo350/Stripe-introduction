@@ -129,31 +129,38 @@ const Home = () => {
     //TODO : Gérer le fait de cibler la quantité uniquement de l'abonnement selectionné, si j'incrémente le counter premuim ainsi que le silver et que je fini par choisir le silver, on rentrera dans la 1ère condition => Pas voulu
         if (state.premiumProductCounter !== 0 && state.silverProductCounter === 0) {
             if (state.premiumProductCounter >= 15) {
+                //? Au click sur le bouton "choisir abonnement", on le désactive pour ne pas pouvoir continuer 
+                dispatch({ type: SET_DISABLED});
                 dispatch({ type: RECORD_EURO_PER_SEAT, payload: 5 });
                 dispatch({ type: RECORD_PRODUCT_QUANTITY, payload: state.premiumProductCounter });
                 console.log("15 ou SUPP");
 
             }
             else if (state.premiumProductCounter >= 6) {
+                dispatch({ type: SET_DISABLED});
                 dispatch({ type: RECORD_EURO_PER_SEAT, payload: 10 });
                 dispatch({ type: RECORD_PRODUCT_QUANTITY, payload: state.premiumProductCounter });
 
                 console.log("6 OU SUPP");
 
             } else {
+                console.log("DISABLED VAUT =>", state.disabled);
+                console.log("SON CONTRAIRE =>", !state.disabled);
+                dispatch({ type: SET_DISABLED});
                 dispatch({ type: RECORD_EURO_PER_SEAT, payload: 15 });
                 dispatch({ type: RECORD_PRODUCT_QUANTITY, payload: state.premiumProductCounter });
 
                 console.log("5 OU MOINS");
             }
         } else if (state.silverProductCounter !==0 && state.premiumProductCounter === 0 ) {
+            dispatch({ type: SET_DISABLED});
             dispatch({ type: RECORD_EURO_PER_SEAT, payload: 108 })
             dispatch({ type: RECORD_PRODUCT_QUANTITY, payload: state.silverProductCounter });
 
         } else {
             console.log("Les deux counteur ont une valeur, il faut celui qui n'est pas le choix finale à 0");
             //? Normalement à cet étape le bouton de selection de l'abonnement est désactivé / grisén on va donc le ré-activer pour respecter la consigne : choisir un seul abonnement.
-            dispatch({ type: SET_DISABLED});
+            // dispatch({ type: SET_DISABLED});
         }
     };
 

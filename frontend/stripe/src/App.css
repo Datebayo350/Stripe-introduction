@@ -68,3 +68,9 @@ input::placeholder {
   color: white;
 
 }
+
+
+.disabled {
+  background-color: rgb(192, 192, 192);
+  opacity:0.5;
+}

@@ -1,7 +1,6 @@
 const CustomCard = (props) => {
 
     const { productName, productImage, counter, priceData, disabled, onClickCounter, onClickSubscription, children } = props;
-    console.log(priceData);
     return (
         <div className="container card flex flex-col h-full mx-auto p-6 rounded-3xl shadow-2xl text-white font-bold lg:max-w-xl">
             <div className="container flex flex-col flex-wrap self-center mt-7 p-4 items-center">

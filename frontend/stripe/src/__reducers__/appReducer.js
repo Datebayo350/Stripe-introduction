@@ -8,7 +8,8 @@ export const appReducer = (previousState, action) => {
         error: action.payload
       };
     
-    case "_SET_DISABLED":
+    case "SET_DISABLED":
+      
       return {
         //? Copie de l'ancien state
         ...previousState,
