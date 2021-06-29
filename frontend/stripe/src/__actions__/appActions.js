@@ -1,5 +1,5 @@
 export const SET_DISABLED = "SET_DISABLED";
-export const RECORD_PAYMENT_ERROR = "RECORD_ERROR";
+export const RECORD_ERROR = "RECORD_ERROR";
 
 //? Données Client et Informations achat --------------------------------------------------------------------------------- 
 export const RECORD_PAYMENT_INTENT_ID = "RECORD_PAYMENT_INTENT_ID";

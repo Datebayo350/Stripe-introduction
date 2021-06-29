@@ -80,26 +80,26 @@ export const appReducer = (previousState, action) => {
     case "INCREMENT_PREMIUM_COUNTER":
       return {
         ...previousState,
-        premiumCounter: previousState.premiumCounter + 1
+        premiumProductCounter: previousState.premiumProductCounter + 1
       };
     
     case "DECREMENT_PREMIUM_COUNTER":
       return {
         ...previousState,
-        premiumCounter: previousState.premiumCounter - 1
+        premiumProductCounter: previousState.premiumProductCounter - 1
       };
 
     case "INCREMENT_SILVER_COUNTER":
       return {
         ...previousState,
-        silverCounter: previousState.silverCounter + 1
+        silverProductCounter: previousState.silverProductCounter + 1
       };
 
     case "DECREMENT_SILVER_COUNTER":
 
       return {
         ...previousState,
-        silverCounter: previousState.silverCounter - 1
+        silverProductCounter: previousState.silverProductCounter - 1
       };
     
     case "RECORD_PRODUCTS":

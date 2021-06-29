@@ -30,7 +30,7 @@ const Home = () => {
     useEffect(() => {
 
         //? Calcul du montant total à payer en fonction de l'abonnement choisi
-        state.premiumCounter > 0 ? dispatch({ type: RECORD_TOTAL_AMOUNT_TO_PAY, payload: state.premiumCounter * state.euro }) : dispatch({ type: "RECORD_TOTAL_AMOUNT_TO_PAY", payload: state.silverCounter * state.euro });
+        state.premiumProductCounter > 0 ? dispatch({ type: RECORD_TOTAL_AMOUNT_TO_PAY, payload: state.premiumProductCounter * state.euro }) : dispatch({ type: "RECORD_TOTAL_AMOUNT_TO_PAY", payload: state.silverProductCounter * state.euro });
         
         //? Récupération des informations produit (Nom, Prix, Image) nous permettant de construire les cards d'affichage
         const getProducts = async () => {
@@ -127,28 +127,28 @@ const Home = () => {
     // //? Calcule (particulièrement pour les abonnements par palier) le montant par abonnement 
     const calculatePricePerSubscription = _ => {
     //TODO : Gérer le fait de cibler la quantité uniquement de l'abonnement selectionné, si j'incrémente le counter premuim ainsi que le silver et que je fini par choisir le silver, on rentrera dans la 1ère condition => Pas voulu
-        if (state.premiumCounter !== 0 && state.silverCounter === 0) {
-            if (state.premiumCounter >= 15) {
+        if (state.premiumProductCounter !== 0 && state.silverProductCounter === 0) {
+            if (state.premiumProductCounter >= 15) {
                 dispatch({ type: RECORD_EURO_PER_SEAT, payload: 5 });
-                dispatch({ type: RECORD_PRODUCT_QUANTITY, payload: state.premiumCounter });
+                dispatch({ type: RECORD_PRODUCT_QUANTITY, payload: state.premiumProductCounter });
                 console.log("15 ou SUPP");
 
             }
-            else if (state.premiumCounter >= 6) {
+            else if (state.premiumProductCounter >= 6) {
                 dispatch({ type: RECORD_EURO_PER_SEAT, payload: 10 });
-                dispatch({ type: RECORD_PRODUCT_QUANTITY, payload: state.premiumCounter });
+                dispatch({ type: RECORD_PRODUCT_QUANTITY, payload: state.premiumProductCounter });
 
                 console.log("6 OU SUPP");
 
             } else {
                 dispatch({ type: RECORD_EURO_PER_SEAT, payload: 15 });
-                dispatch({ type: RECORD_PRODUCT_QUANTITY, payload: state.premiumCounter });
+                dispatch({ type: RECORD_PRODUCT_QUANTITY, payload: state.premiumProductCounter });
 
                 console.log("5 OU MOINS");
             }
-        } else if (state.silverCounter !==0 && state.premiumCounter === 0 ) {
+        } else if (state.silverProductCounter !==0 && state.premiumProductCounter === 0 ) {
             dispatch({ type: RECORD_EURO_PER_SEAT, payload: 108 })
-            dispatch({ type: RECORD_PRODUCT_QUANTITY, payload: state.silverCounter });
+            dispatch({ type: RECORD_PRODUCT_QUANTITY, payload: state.silverProductCounter });
 
         } else {
             console.log("Les deux counteur ont une valeur, il faut celui qui n'est pas le choix finale à 0");
@@ -157,12 +157,40 @@ const Home = () => {
         }
     };
 
-    //? Stock la quantité d'abonnements choisis
+    //? Stock la quantité d'unités d'abonnement choisi via les counter
     const setCounterQuantity = (e) => {
+        //? Chaîne de caractère contenant les valeurs des attributs du bouton sur lequel j'ai cliqué
+        const productName = e.target.outerHTML;
+        //? On découpe la chaîne
+        const arrayProductName = productName.split(" ");
+        //? CLique sur le bouton plus ou sur le bouton moins ?
+        const plusOUmoins = e.target.attributes.value.textContent;
+        //? Récupération du nom de l'abonnement : Premium ou Silver, qui me permettra d'agir sur le counter silver ou premium
 
+        if (arrayProductName[4] === "Premium") {
+            if (plusOUmoins === "plus") {
+
+                if (state.premiumProductCounter >= 0) {
+                    dispatch({ type: INCREMENT_PREMIUM_COUNTER });
+                }
+
+            } else {
+                if (state.premiumProductCounter >= 1) { dispatch({ type: DECREMENT_PREMIUM_COUNTER }) }
+            }
+
+        } else {
+            if (plusOUmoins === "plus") {
+
+                if (state.silverProductCounter >= 0) { dispatch({ type: INCREMENT_SILVER_COUNTER }) }
+
+            } else {
+
+                if (state.silverProductCounter >= 1) { dispatch({ type: DECREMENT_SILVER_COUNTER }) }
+            }
+        }
     };
 
-    //? Stock le nom de l'abonnement choisi
+    //? Stock le nom de l'abonnement choisi 
     const selectedSubscription = (e) => {
 
         const subscriptionType = e.target.innerHTML;
@@ -177,6 +205,7 @@ const Home = () => {
     const handlePayThisPrice = (e) => {
 
     }
+
     return (
         <>
             <div className="flex flex-col mt-3 items-center min-h-screen">
@@ -185,9 +214,9 @@ const Home = () => {
                     {state.pricesData.length > 0 &&
 
                         <>
-                            <CustomCard productName={state.premiumProductName} productImage={state.premiumProductImage} counter={state.premiumCounter} pricesData={state.pricesData[1]} disabled={state.disabled} onClickCounter={setCounterQuantity} onClickSubscription={selectedSubscription} />
+                            <CustomCard productName={state.premiumProductName} productImage={state.premiumProductImage} counter={state.premiumProductCounter} priceData={state.pricesData[0]} disabled={state.disabled} onClickCounter={setCounterQuantity} onClickSubscription={selectedSubscription} />
 
-                            <CustomCard productName={state.silverProductName} productImage={state.silverProductImage} counter={state.silverCounter} pricesData={state.pricesData[0]} disabled={state.disabled} onClickCounter={setCounterQuantity} onClickSubscription={selectedSubscription} />
+                            <CustomCard productName={state.silverProductName} productImage={state.silverProductImage} counter={state.silverProductCounter} priceData={state.pricesData[1]} disabled={state.disabled} onClickCounter={setCounterQuantity} onClickSubscription={selectedSubscription} />
                         </>
                     }
 
