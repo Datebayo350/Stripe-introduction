@@ -13,7 +13,7 @@ const CustomCard = (props) => {
 
             <div className="container mt-7 h-48  flex flex-col items-center ">
                 <p className="text-xl">Prix de l'abonnement par personne :</p>
-                {pricesData.subscription
+                {pricesData.premium
                     ?
                     <ul className="mt-3 min-h-full text-xl p-5">
                         {

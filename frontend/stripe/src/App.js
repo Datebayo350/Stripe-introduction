@@ -25,7 +25,7 @@ function App() {
   const [state, dispatch] = useReducer(appReducer, appState);
   return (
     
-    <appContext.Provider value={state}>
+    <appContext.Provider value={{state, dispatch}}>
       <Elements stripe={stripePromise}>
         <Router>
           <CustomNavbar />

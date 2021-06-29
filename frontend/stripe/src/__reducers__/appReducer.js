@@ -2,15 +2,87 @@
 export const appReducer = (previousState, action) => {
   switch (action.type) {
     //? Objectif = modifier le rendu de l'application en fonction des actions émises par la fonction dispatch
-    case "INCREMENT_PREMIUM_COUNTER":
+    case "RECORD_ERROR": 
+      return {
+        ...previousState,
+        error: action.payload
+      };
+    
+    case "_SET_DISABLED":
       return {
         //? Copie de l'ancien state
         ...previousState,
         //? Et modification uniquement de la propriété voulue
         //! Pour les valeurs booléennes ça sera  : différent (exemple : !true) de la valeur initiale 
-        premiumCounter: previousState.premiumCounter + 1
+        disabled: !previousState.disabled,
       };
 
+    case "RECORD_PAYMENT_INTENT_ID":
+      return {
+        ...previousState,
+        paymentIntentId: action.payload.paymentIntentId,
+      };
+      
+    case "RECORD_CUSTOMER_SECRET": 
+      return {
+        ...previousState,
+        customerSecret: action.payload
+      };
+    
+    case "RECORD_CUSTOMER_DATA":
+      return {
+        ...previousState,
+        customerData: {
+          id: action.payload.id, 
+          name: action.payload.name, 
+          email: action.payload.email, 
+          phone: action.payload.phone, 
+        }
+      };
+    
+    //! Element à revoir
+    case "RECORD_SUBSCRIPTION_SELECTED":
+      return {
+        ...previousState,
+        subscriptionSelected: action.payload.subscription,
+        //? Désactive les boutons de selection abonnement une fois l'un d'entre eux choisit
+        //? Désactive le bouton de paiement finale après avoir déjà cliqué dessus 1 fois 
+        disabled: true,
+        productQuantity: action.payload.productQuantity,
+        euro: action.payload.euro,
+        //! L'enregistrement de la propriété productQuantity risque de ne pas passer étant donné qu'on se base sur le previous.state et que la propriété du même nom dans le state est définie ici
+        customerPurchaseData: { customerId: previousState.customer.id, productPriceObject: action.payload.objectPriceId, productQuantity: action.payload.productQuantity }
+      };
+    
+    //! Surrêment pas utile
+    case "RECORD_EURO_PER_SEAT":
+
+      return {
+        ...previousState,
+        euro: action.payload
+      };
+
+    //! Surrêment pas utile
+    case "RECORD_PRODUCT_QUANTITY":
+
+      return {
+        ...previousState,
+        productQuantity: action.payload
+      };
+   
+    case "RECORD_TOTAL_AMOUNT_TO_PAY":
+
+      return {
+        ...previousState,
+        totalAmountToPay: action.payload
+      };
+    
+    case "INCREMENT_PREMIUM_COUNTER":
+      return {
+        ...previousState,
+        premiumCounter: previousState.premiumCounter + 1
+      };
+    
     case "DECREMENT_PREMIUM_COUNTER":
       return {
         ...previousState,
@@ -29,55 +101,62 @@ export const appReducer = (previousState, action) => {
         ...previousState,
         silverCounter: previousState.silverCounter - 1
       };
-
-    case "SUBSCRIPTION_SELECTED":
-
+    
+    case "RECORD_PRODUCTS":
       return {
         ...previousState,
-        subscriptionSelected: action.payload.subscription,
-        //? Grise les boutons de selection abonnement une fois l'un d'entre eux choisit
-        disabled: true,
-        customerPurchaseData: { customerId: previousState.customer.id, productPriceObject: action.payload.objectPriceId, productQuantity: previousState.quantity }
+        products: action.payload
+      };   
+
+    case "RECORD_PRICES":
+      return {
+        ...previousState,
+        prices: action.payload
       };
 
-    case "RECORD_EURO_PER_SEAT":
-
+    case "RECORD_PRODUCTS_DATA":
       return {
         ...previousState,
-        euro: action.payload
-      };
-
-    case "RECORD_TOTAL_AMOUNT_TO_PAY":
-
-      return {
-        ...previousState,
-        totalAmountToPay: action.payload
-      };
-
-    case "RECORD_PRODUCT_QUANTITY":
-
-      return {
-        ...previousState,
-        productQuantity: action.payload
-      };
-
-    case "RECORD_CUSTOMER_PURCHASE_DATA":
-      // console.log("EVT ENREGISTREMENT DONNES",previousState.productQuantity);
-      return {
-        ...previousState,
-        customerPurchaseData: { customerId: previousState.customer.id, productPriceObject: action.payload.priceObjectId, productQuantity: previousState.productQuantity }
+        premiumProductName: action.payload.premium.premiumProductName,
+        premiumProductId: action.payload.premium.premiumProductId,
+        premiumProductImage: action.payload.premium.premiumProductImage,
+        silverProductName: action.payload.silver.silverProductName,
+        silverProductId: action.payload.silver.silverProductId,
+        silverProductImage: action.payload.silver.silverProductImage,
 
       };
 
-    case "RECORD_PAYMENT_METHOD_INFOS":
-      console.log("reducer - payment methode id", action.payload.paymentMethodId);
+    case "RECORD_PRICES_DATA":
       return {
         ...previousState,
-        paymentMethodId: action.payload.paymentMethodId
+        premiumPriceId: action.payload.premium.premiumPriceId,
+        silverPriceId: action.payload.silver.silverPriceId,
+        pricesData: [...previousState.pricesData, action.payload.premium.premiumProductPrice, action.payload.silver.silverProductPrice]
+      };
+    
+    case "RECORD_PAYMENT_DATA":
+      return {
+        ...previousState,
+        paymentMethodId: action.payload.paymentMethodId,
+        paymentEmail:action.payload.paymentEmail,
+        paymentPhone:action.payload.paymentPhone,
+        paymentName:action.payload.paymentName,
+      };
+    
+    case "RECORD_PAYMENT_PROCESSING":
+      return {
+        ...previousState,
+        processing: !previousState.processing
+      };
+    
+    case "RECORD_PAIMENT_SUCCESS": 
+      return {
+        ...previousState,
+        paymentSucceeded: action.payload
       };
   }
-  //? Quelque soit l'action passée, un state sera toujours renvoyé à la fin, le nouveau ou bien l'ancien 
-  //? Pour ne pas introduire d'effets de bord indésirables lors du return, on va envoyé un state "muté" = on copie ce que contient l'ancien et on rajoute les nouveaux éléments (ou modification uniquement certains)
+  //? Quelle-que soit l'action passée, un state sera toujours renvoyé à la fin, le nouveau ou bien l'ancien. 
+  //? Pour ne pas introduire d'effets de bord indésirables lors du return, on va renvoyer un state "muté" = on copie ce que contient l'ancien et on rajoute les nouveaux éléments (ou modification uniquement certains)
   return previousState;
 
 }

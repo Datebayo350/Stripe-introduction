@@ -1,36 +1,40 @@
 //? "appState" contiendra l'état par défaut de notre state
 export const appState = {
 
-    //? Cette partie du state remplace les variables de state de CheckoutForm
-    clientSecret: String,
-    succeeded: String,
     disabled: false,
+    //? Cette partie du state remplace les variables de state de CheckoutForm
+    paymentMethodId: String,
+    paymentEmail: String,
+    paymentPhone: String,
+    paymentName: String,
+    error: [], 
     processing: false,
-    email: String,
-    phone: String,
-    error: [],
-    name: String,
+    customerSecret: String,
+    paymentSucceeded: String,
     //?-----------------------------
     
     //? Cette partie du state remplace les variables de state de Home
-    customer: { id: "cus_JVP8OqKZ2LXm53", name: String, email: String, phone: Number, },
-    subscriptionSelected: String,
+    customerData: { id: "cus_JVP8OqKZ2LXm53", name: String, email: String, phone: Number, },
     paymentIntentId: String,
-    paymentMethodId: String,
+    subscriptionSelected: String,
     totalAmountToPay: 0,
     productQuantity: 0,
-    euro: 0,
+    euroPerSeat: 0,
     customerPurchaseData: { customerId: String, productPriceObject: String, productQuantity: Number },
 
     premiumProductName: String,
-    premiumProductId: "prod_JV2EPpQRXgMOyd",
-    premiumImage: String,
-    premiumCounter: 0,
-    premiumPriceId: "price_1ItC4zLG9PLRTQCEN8TrdSEG",
+    premiumProductId: String,
+    premiumProductImage: String,
+    premiumProductCounter: 0,
+    premiumPriceId: String,
     
     silverProductName: String,
-    silverProductId: "",
-    silverImage: String,
-    silverCounter: 0,
-    silverPriceId: "price_1J06T9LG9PLRTQCENyRoJoq6",
+    silverProductId:String,
+    silverProductImage: String,
+    silverProductCounter: 0,
+    silverPriceId: String,
+
+    prices:{}, 
+    pricesData:[],
+    products:{} 
   };
