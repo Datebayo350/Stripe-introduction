@@ -75,16 +75,42 @@ export default function CheckoutForm() {
 
   };  
 
+  const createSubscription = async (customerId, priceObjectId, paymentMethodId, productQuantity) => {
+    const items = [
+      { price: priceObjectId, quantity: productQuantity }
+    ];
+
+    try {
+      const atachPMtoTheCustomer =  await axios.post("http://localhost:5000/api/payments/saveToUser", {
+        data: {
+          customerId,
+          paymentMethodId,
+        }
+      });
+      const newSubscription =  await axios.post("http://localhost:5000/api/subscriptions/create", {
+        data: {
+          customerId,
+          items,
+          paymentMethodId,
+        }
+      });
+    }
+    catch (e) {
+      console.log("Erreur Création et Attachement méthode paiement =>", e);
+    }
+
+  };
+
   //TODO: Si une methode de paiement est définie dans le state on remet les valeurs du state à 0 en cliquant sur un bouton 
   const reset = () => {
-    setClientSecret("");
-    setSucceeded("");
-    setDisabled(false);
-    setProcessing(false);
-    setEmail("");
-    setPhone("");
-    setError([]);
-    setName("");;
+    // setClientSecret("");
+    // setSucceeded("");
+    // setDisabled(false);
+    // setProcessing(false);
+    // setEmail("");
+    // setPhone("");
+    // setError([]);
+    // setName("");;
 
   };
 
