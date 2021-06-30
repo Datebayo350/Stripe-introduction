@@ -101,6 +101,31 @@ export default function CheckoutForm() {
 
   };
 
+  useEffect(() => {
+    //? index.js:1 Warning: Can't perform a React state update on an unmounted component. This is a no-op, but it indicates a memory leak in your application. To fix, cancel all subscriptions and asynchronous tasks in a useEffect cleanup function. at CheckoutForm
+    //! https://www.debuggr.io/react-update-unmounted-component/
+
+     //? On remet la valeur de "disabled" à "false" une fois arrivé sur cette page, car on aura besoin de réalisé un traitement différent au click sur le bouton de paiement 
+     dispatch({type:SET_DISABLED})
+    
+    //? Si l'id de la méthode de paiement existe, on créer l'abonnement 
+      if(state.paymentMethodId.length > 1) { 
+          if (state.customerPurchaseData.customerId) {
+            
+            const newsub = createSubscription(state.customerPurchaseData.customerId, state.customerPurchaseData.productPriceObject, state.paymentMethodId, state.customerPurchaseData.productQuantity)
+            console.log("ABONNEMENT CREE =>", newsub);
+            
+          }else {
+            console.log("Il faut choisir un abonnement, retourner sur la page home");
+          }
+      }else {
+        console.log("Créer la méthode de paiement en renseignant les champs du formulaire et en le validant");
+      }
+      getClientSecret();
+
+  }, [state]);
+
+
   //TODO: Si une methode de paiement est définie dans le state on remet les valeurs du state à 0 en cliquant sur un bouton 
   const reset = () => {
     // setClientSecret("");
