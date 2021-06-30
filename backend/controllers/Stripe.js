@@ -262,11 +262,28 @@ module.exports = {
         
         }
     },
-    
+
+    taxRates:{
+        
+        create:null, //? Taxe TVA créée via la ligne de commande Stripe CLI : https://stripe.com/docs/api/tax_rates/object?lang=cli
+        
+        retrieveAll: async (req, res, next) => {
+            
+            try{
+                const data = await stripe.taxRates.list();
+                return res.json({taxexList: data});
+            }
+            catch(err){
+                console.log(err);
+                next(err);
+            }
+        },
+    },
+
     sessions: {
         //? Méthode : https://stripe.com/docs/billing/subscriptions/checkout le paiement sera effectué via un formulaire Stripe généré automatiquement pas customisé.
         create: async (req, res, next) => {
-            //? Récupération de l'identifiant de "l'objet Prices" du produit que le client a l'intention d'acheter, envoyé depuis le front lors de l'appel sur cette API
+            //? Récupération de l'identifiant de l'objet "Prices" du produit que le client a l'intention d'acheter, envoyé depuis le front lors de l'appel sur cette API
             const {customerId, productPriceObjectId} = req.body.data;
 
             try {
@@ -330,14 +347,25 @@ module.exports = {
     subscriptions: {
         create: async (req, res, next) => {
             try {
-                
-                const newSubscription = await stripe.subscriptions.create({
+                const taxes = await stripe.taxRates.list({limit:1});
+                const tva = taxes.data[0].id;
 
-                }) 
+                const newSubscription = await stripe.subscriptions.create({
+                    customer: req.body.data.customerId,
+                    items: [
+                        { price: req.body.data.items[0].price, quantity: req.body.data.items[0].quantity, tax_rates: [tva]}
+                    ],
+                    //? Autres attributs pouvant être intéréssants : 
+                        //? - https://stripe.com/docs/api/subscriptions/create#create_subscription-default_payment_method
+                        //? - https://stripe.com/docs/api/subscriptions/create#create_subscription-payment_behavior
+                        //? - https://stripe.com/docs/api/subscriptions/create#create_subscription-add_invoice_items
+                })
+
+                return res.json({ success: true, createdSubscription: newSubscription })
 
             } catch (error) {
                 console.log("ERREUR RENVOYEE PAR SUBSCRIPTIONS OBJECT =>", error);
-            }    
+            }
         },
 
         retrieveAll: async (req, res, next) => {

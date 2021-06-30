@@ -1,3 +1,4 @@
+
 require('dotenv').config();
 const SECRET_CLEVER_DATABSE_CONNECTION = process.env.SECRET_CLEVER_DATABSE_CONNECTION;
 const StripeController = require("./controllers/Stripe");
@@ -65,8 +66,13 @@ app.get('/api/sessions/retrieveAll', StripeController.sessions.retrieveAll);
 
 //! Subscriptions
 app.get('/api/subscriptions/retrieveAll', StripeController.subscriptions.retrieveAll);
-// app.post('/api/subscriptions/create', StripeController.subscriptions.create);
+app.post('/api/subscriptions/create', StripeController.subscriptions.create);
 // app.get('/api/subscriptions/retrieve', StripeController.subscriptions.retrieve);
 // app.put('/api/subscriptions/update', StripeController.subscriptions.update);
 
+//! Taxe Rates
+app.get('/api/taxRates/retrieveAll', StripeController.taxRates.retrieveAll);
+// app.post('/api/taxRates/create', StripeController.taxRates.create);
+// app.get('/api/taxRates/retrieve', StripeController.taxRates.retrieve);
+// app.put('/api/taxRates/update', StripeController.taxRates.update);
 app.listen(5000, () => (console.log("Serveur démaré sur le port 5000")))
