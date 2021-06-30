@@ -72,7 +72,9 @@ export const appReducer = (previousState, action) => {
 
       return {
         ...previousState,
-        totalAmountToPay: action.payload
+        totalAmountToPay: action.payload,
+        stripeAmount:action.payload * 100,
+
       };
     
     case "INCREMENT_PREMIUM_COUNTER":

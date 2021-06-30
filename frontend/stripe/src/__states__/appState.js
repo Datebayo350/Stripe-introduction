@@ -18,6 +18,7 @@ export const appState = {
   paymentIntentId: String,
   subscriptionSelected: String,
   totalAmountToPay: 0,
+  stripeAmount:0,
   productQuantity: 0,
   euroPerSeat: 0,
   customerPurchaseData: { customerId: String, productPriceObject: String, productQuantity: Number },

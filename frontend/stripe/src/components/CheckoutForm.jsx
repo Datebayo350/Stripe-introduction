@@ -49,7 +49,32 @@ export default function CheckoutForm() {
   const globalContext = useContext(appContext);
 
   const {state, dispatch} = globalContext;
- 
+   //? Quand le client arrive sur la page, on crée automatiquement une intention de paiement qu'on viendra confirmer lors de la soumission du formulaire
+  const getClientSecret = async () => {
+    try {
+      //? On appel l'API Rest qui s'occupe de créer une intention de paiement et on lui fournit les informations requises pour cela 
+      const secretClientCall = await axios.post("http://localhost:5000/api/intents/create", {
+        //! Propriété obligatoire pour créer une intention de paiement
+        amount: state.stripeAmount, //? Toujours rajouter 2 "zero" pour obtenir le chiffre souhaité car stripe crée des prix avec des nombres décimaux 
+        //! Propriété obligatoire pour créer un paiement
+        currency: "eur",
+        //! Propriété Optionnelle
+        customer: state.customerData.id, //? Si on ne renseigne pas le client avec son ID, les informations personnelles de l'utilisateur ayant effectué le paiement seront celles rentrées par le client dans le formulaire
+      })
+
+      //? Promesse résolue, le client HTTP Axios nous renvoie directement un objet JSON, pas besoin de le stringifier
+      const secret = secretClientCall.data.secret;
+
+      //? On stock la clé secrète de l'intention de paiement
+      dispatch({ type:RECORD_CUSTOMER_SECRET, payload:secret });
+    }
+
+    catch (e) {
+      console.log(e);
+    }
+
+  };  
+
   //TODO: Si une methode de paiement est définie dans le state on remet les valeurs du state à 0 en cliquant sur un bouton 
   const reset = () => {
     setClientSecret("");
