@@ -5,7 +5,7 @@ export const appReducer = (previousState, action) => {
     case "RECORD_ERROR": 
       return {
         ...previousState,
-        error: action.payload
+        error: {errorMessage: action.payload}
       };
     
     case "SET_DISABLED":
@@ -18,6 +18,12 @@ export const appReducer = (previousState, action) => {
         disabled: !previousState.disabled,
       };
 
+    case "ON_CHANGE":
+      const name = action.payload.name;
+      return {
+        ...previousState,
+        [name]: action.payload.value
+      }
     case "RECORD_PAYMENT_INTENT_ID":
       return {
         ...previousState,
@@ -113,34 +119,31 @@ export const appReducer = (previousState, action) => {
         ...previousState,
         prices: action.payload
       };
-
-    case "RECORD_PRODUCTS_DATA":
+      
+      case "RECORD_PRODUCTS_DATA":
+        return {
+          ...previousState,
+          premiumProductName: action.payload.premium.premiumProductName,
+          premiumProductId: action.payload.premium.premiumProductId,
+          premiumProductImage: action.payload.premium.premiumProductImage,
+          silverProductName: action.payload.silver.silverProductName,
+          silverProductId: action.payload.silver.silverProductId,
+          silverProductImage: action.payload.silver.silverProductImage,
+          
+        };
+        
+        case "RECORD_PRICES_DATA":
       return {
         ...previousState,
-        premiumProductName: action.payload.premium.premiumProductName,
-        premiumProductId: action.payload.premium.premiumProductId,
-        premiumProductImage: action.payload.premium.premiumProductImage,
-        silverProductName: action.payload.silver.silverProductName,
-        silverProductId: action.payload.silver.silverProductId,
-        silverProductImage: action.payload.silver.silverProductImage,
-
-      };
-
-    case "RECORD_PRICES_DATA":
-      return {
-        ...previousState,
-        premiumPriceId: action.payload.premium.premiumPriceId,
-        silverPriceId: action.payload.silver.silverPriceId,
+        premiumPriceId: action.payload.premium.premiumPrice.id,
+        silverPriceId: action.payload.silver.silverPrice.id,
         pricesData: [...previousState.pricesData, action.payload.premium.premiumProductPrice, action.payload.silver.silverProductPrice]
       };
     
-    case "RECORD_PAYMENT_DATA":
+    case "RECORD_PAYMENT_METHOD_ID":
       return {
         ...previousState,
         paymentMethodId: action.payload.paymentMethodId,
-        paymentEmail:action.payload.paymentEmail,
-        paymentPhone:action.payload.paymentPhone,
-        paymentName:action.payload.paymentName,
       };
     
     case "RECORD_PAYMENT_PROCESSING":
@@ -149,14 +152,14 @@ export const appReducer = (previousState, action) => {
         processing: !previousState.processing
       };
     
-    case "RECORD_PAIMENT_SUCCESS": 
+    case "RECORD_PAYMENT_SUCCESS": 
       return {
         ...previousState,
         paymentSucceeded: action.payload
       };
+      //? Quelle-que soit l'action passée, un state sera toujours renvoyé à la fin, le nouveau ou bien l'ancien. 
+      //? Pour ne pas introduire d'effets de bord indésirables lors du return, on va renvoyer un state "muté" = on copie ce que contient l'ancien et on rajoute les nouveaux éléments (ou modification uniquement certains)
+      default : return previousState;
   }
-  //? Quelle-que soit l'action passée, un state sera toujours renvoyé à la fin, le nouveau ou bien l'ancien. 
-  //? Pour ne pas introduire d'effets de bord indésirables lors du return, on va renvoyer un state "muté" = on copie ce que contient l'ancien et on rajoute les nouveaux éléments (ou modification uniquement certains)
-  return previousState;
 
 }

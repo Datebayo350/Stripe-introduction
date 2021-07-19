@@ -7,14 +7,14 @@ export const appState = {
   paymentEmail: String,
   paymentPhone: String,
   paymentName: String,
-  error: [], 
+  error: {errorMessage: String}, 
   processing: false,
   customerSecret: String,
   paymentSucceeded: String,
   //?-----------------------------
   
   //? Cette partie du state remplace les variables de state de Home
-  customerData: { id: "cus_JVP8OqKZ2LXm53", name: String, email: String, phone: Number, },
+  customerData: { id: "cus_JV1oYTX0HdOkq4", name: String, email: String, phone: Number, },
   paymentIntentId: String,
   subscriptionSelected: String,
   totalAmountToPay: 0,

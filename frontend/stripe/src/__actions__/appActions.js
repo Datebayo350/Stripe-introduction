@@ -1,5 +1,6 @@
 export const SET_DISABLED = "SET_DISABLED";
 export const RECORD_ERROR = "RECORD_ERROR";
+export const ON_CHANGE = "ON_CHANGE";
 
 //? Données Client et Informations achat --------------------------------------------------------------------------------- 
 export const RECORD_PAYMENT_INTENT_ID = "RECORD_PAYMENT_INTENT_ID";
@@ -27,9 +28,8 @@ export const RECORD_PRODUCTS_DATA = "RECORD_PRODUCTS_DATA";
 export const RECORD_PRICES_DATA = "RECORD_PRICES_DATA";
 
 //? Paiement finale - données client --------------------------------------------------------------------------------- 
-export const RECORD_PAYMENT_DATA = "RECORD_PAYMENT_DATA";
+export const RECORD_PAYMENT_METHOD_ID = "RECORD_PAYMENT_METHOD_ID";
 export const RECORD_PAYMENT_PROCESSING = "RECORD_PAYMENT_PROCESSING";
-
-export const RECORD_PAIMENT_SUCCESS = "RECORD_PAIMENT_SUCCESS";
+export const RECORD_PAYMENT_SUCCESS = "RECORD_PAIMENT_SUCCESS";
 
 

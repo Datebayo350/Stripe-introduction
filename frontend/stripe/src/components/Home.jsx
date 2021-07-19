@@ -66,14 +66,13 @@ const Home = () => {
 
                 
                 //? Liste des objets "Prices"
-                //! ATTENTION : L'objet "Plans" est similaire à "Prices" cependant il n'est plus d'actualité, il faudra donc éviter de l'utiliser : https://stripe.com/docs/api/plans
+                //! ATTENTION : L'objet "Plans" est similaire à "Prices" cependent il n'est plus d'actualité, il faudra donc éviter de l'utiliser : https://stripe.com/docs/api/plans
                 const prices = await axios.get("http://localhost:5000/api/prices/retrieveAll");
-                
                 dispatch({type:RECORD_PRICES, payload: prices})
 
                 //? Récupération de l'Objet "Prices" Premium, qui sera associé à l'objet "Products" Premium égallement => : https://stripe.com/docs/api/prices/object
-                const premiumPriceId = prices.data.result.data.find(premium => premium.nickname === "FitLab Premium - Abonnement dégréssif")
-                const silverPriceId = prices.data.result.data.find(premium => premium.nickname === "FitLab Silver - Abonnement Semestrielle")
+                const premiumPrice = prices.data.result.data.find(premium => premium.nickname === "FitLab Premium - Abonnement dégréssif")
+                const silverPrice = prices.data.result.data.find(premium => premium.nickname === "FitLab Silver - Abonnement Semestrielle")
 
                 const premiumProductPrice = {
                     product: "premium",
@@ -108,8 +107,8 @@ const Home = () => {
                 };
 
                 dispatch({type:RECORD_PRICES_DATA, payload:{
-                    premium: {premiumPriceId, premiumProductPrice},
-                    silver: {silverPriceId, silverProductPrice}
+                    premium: {premiumPrice, premiumProductPrice},
+                    silver: {silverPrice, silverProductPrice}
                 }})
             }
 
