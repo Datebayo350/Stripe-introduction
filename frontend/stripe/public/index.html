@@ -10,6 +10,12 @@
       content="Web site created using create-react-app"
     />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <title>Subscription prices</title>
+
+    <!-- https://stripe.com/docs/billing/subscriptions/per-seat#collect-payment -->
+    <!-- Permettrais d'accèder au à stripe.elements (le fameux objet que je ne parvenais pas à utiliser pour la création d'Element from scratch) -->
+    <!-- Mais égalemment peut-être à webhooks (même si son utilisation est côté back normalement...), c'est juste ma suposition personnelle, sûrement foireuse -->
+    <script src="https://js.stripe.com/v3/"></script>
     <!--
       manifest.json provides metadata used when your web app is installed on a
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
