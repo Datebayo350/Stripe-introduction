@@ -1,3 +1,7 @@
+.active {
+  background-color: #8de2de;
+  color: black;
+}
 .App {
   text-align: center;
 }
@@ -56,4 +60,21 @@ input::placeholder {
 
 .button {
   background-color: #8de2de;
+}
+
+.navbar {
+
+  background-color: #8de2de;
+  color: white;
+
+}
+
+.disabled {
+  background-color: rgb(192, 192, 192);
+  opacity:0.5;
+}
+
+.attention {
+  width: 26.1833px;
+  height : 24px; 
 }

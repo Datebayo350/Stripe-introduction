@@ -24,6 +24,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());
 
+//! WebHook
+app.post("/webhook", StripeController.webhook);
+
 //! Intents (intentions de paiement)
 app.post('/api/intents/create', StripeController.intents.create);
 app.get('/api/intents/retrieve', StripeController.intents.retrieve);
@@ -35,9 +38,48 @@ app.post('/api/payments/saveToUser', StripeController.payments.savePaymentMethod
 app.get('/api/payments/retrieve', StripeController.payments.retrieve);
 app.put('/api/payments/update', StripeController.payments.update);
 
-//! customers
+//! Customers
 app.post('/api/customers/create', StripeController.customers.create);
-app.get('/api/customers/retrieve', StripeController.customers.retrieve);
+app.get('/api/customers/retrieveAll', StripeController.customers.retrieveAll);
+app.post('/api/customers/retrieve', StripeController.customers.retrieve);
 app.put('/api/customers/update', StripeController.customers.update);
+
+//! Prices
+app.get('/api/prices/retrieveAll', StripeController.prices.retrieveAll);
+app.post('/api/prices/retrieve', StripeController.prices.retrieve);
+app.put('/api/prices/update', StripeController.prices.update);
+// app.post('/api/prices/create', StripeController.prices.create);
+// app.get('/api/prices/retrieve', StripeController.prices.retrieve);
+
+//! Products
+app.get('/api/products/retrieveAll', StripeController.products.retrieveAll);
+// app.post('/api/products/create', StripeController.products.create);
+// app.get('/api/products/retrieve', StripeController.products.retrieve);
+// app.put('/api/products/update', StripeController.products.update);
+
+//! Sessions
+app.post('/api/sessions/create', StripeController.sessions.create);
+app.get('/api/sessions/retrieveAll', StripeController.sessions.retrieveAll);
+// app.get('/api/sessions/retrieve', StripeController.sessions.retrieve);
+// app.put('/api/sessions/update', StripeController.sessions.update);
+
+//! Subscriptions
+app.get('/api/subscriptions/retrieveAll', StripeController.subscriptions.retrieveAll);
+app.post('/api/subscriptions/create', StripeController.subscriptions.create);
+// app.get('/api/subscriptions/retrieve', StripeController.subscriptions.retrieve);
+// app.put('/api/subscriptions/update', StripeController.subscriptions.update);
+
+//! Tax Rates
+app.get('/api/taxRates/retrieveAll', StripeController.taxRates.retrieveAll);
+// app.post('/api/taxRates/create', StripeController.taxRates.create);
+// app.get('/api/taxRates/retrieve', StripeController.taxRates.retrieve);
+// app.put('/api/taxRates/update', StripeController.taxRates.update);
+
+
+//! Invoices
+app.get('/api/invoices/retrieve', StripeController.invoices.retrieve);
+// app.get('/api/invoices/retrieveAll', StripeController.invoices.retrieveAll);
+// app.post('/api/invoices/create', StripeController.invoices.create);
+// app.put('/api/invoices/update', StripeController.invoices.update);
 
 app.listen(5000, () => (console.log("Serveur démaré sur le port 5000")))
