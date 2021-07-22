@@ -1,4 +1,3 @@
-
 require('dotenv').config();
 const SECRET_CLEVER_DATABSE_CONNECTION = process.env.SECRET_CLEVER_DATABSE_CONNECTION;
 const StripeController = require("./controllers/Stripe");
@@ -15,7 +14,7 @@ try {
         useCreateIndex: true, 
         autoIndex: true,
     })
-   console.log("Connexion database réussie !");
+    console.log("Connexion database réussie !");
 } catch (error) {
     console.log(error);
 }
@@ -34,21 +33,21 @@ app.get('/api/intents/retrieve', StripeController.intents.retrieve);
 app.put('/api/intents/update', StripeController.intents.update);
 
 //! Payments (moyens de paiement)
-app.post('/api/payments/saveToUser', StripeController.payments.savePaymentMethodToAnUser);
 app.post('/api/payments/create', StripeController.payments.create);
+app.post('/api/payments/saveToUser', StripeController.payments.savePaymentMethodToAnUser);
 app.get('/api/payments/retrieve', StripeController.payments.retrieve);
 app.put('/api/payments/update', StripeController.payments.update);
 
 //! Customers
 app.post('/api/customers/create', StripeController.customers.create);
-app.get('/api/customers/retrieve', StripeController.customers.retrieve);
 app.get('/api/customers/retrieveAll', StripeController.customers.retrieveAll);
+app.post('/api/customers/retrieve', StripeController.customers.retrieve);
 app.put('/api/customers/update', StripeController.customers.update);
 
 //! Prices
 app.get('/api/prices/retrieveAll', StripeController.prices.retrieveAll);
 app.post('/api/prices/retrieve', StripeController.prices.retrieve);
-app.post('/api/prices/update', StripeController.prices.update);
+app.put('/api/prices/update', StripeController.prices.update);
 // app.post('/api/prices/create', StripeController.prices.create);
 // app.get('/api/prices/retrieve', StripeController.prices.retrieve);
 
@@ -70,7 +69,7 @@ app.post('/api/subscriptions/create', StripeController.subscriptions.create);
 // app.get('/api/subscriptions/retrieve', StripeController.subscriptions.retrieve);
 // app.put('/api/subscriptions/update', StripeController.subscriptions.update);
 
-//! Taxe Rates
+//! Tax Rates
 app.get('/api/taxRates/retrieveAll', StripeController.taxRates.retrieveAll);
 // app.post('/api/taxRates/create', StripeController.taxRates.create);
 // app.get('/api/taxRates/retrieve', StripeController.taxRates.retrieve);
@@ -82,4 +81,5 @@ app.get('/api/invoices/retrieve', StripeController.invoices.retrieve);
 // app.get('/api/invoices/retrieveAll', StripeController.invoices.retrieveAll);
 // app.post('/api/invoices/create', StripeController.invoices.create);
 // app.put('/api/invoices/update', StripeController.invoices.update);
+
 app.listen(5000, () => (console.log("Serveur démaré sur le port 5000")))

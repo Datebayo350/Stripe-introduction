@@ -191,6 +191,8 @@ export default function CheckoutForm() {
   }
 
   useEffect(() => {
+    console.log("Error longueur", state.error.errorMessage.length);
+    console.log("Error contenu", state.error.errorMessage);
     //? Résolution d'erreur => :
     //? index.js:1 Warning: Can't perform a React state update on an unmounted component. This is a no-op, but it indicates a memory leak in your application. To fix, cancel all subscriptions and asynchronous tasks in a useEffect cleanup function. at CheckoutForm
     //! https://www.debuggr.io/react-update-unmounted-component/
@@ -227,7 +229,7 @@ export default function CheckoutForm() {
       dispatch({ type: RECORD_ERROR, payload: message });
     }
 
-  }, [state.paymentMethodId]);
+  }, [state.paymentMethodId, state.processing]);
 
 
   //TODO: Si une methode de paiement est définie dans le state on remet les valeurs du state à 0 en cliquant sur un bouton 
@@ -250,9 +252,9 @@ export default function CheckoutForm() {
 
       <div className="flex flex-col items-center ">
 
-        {state.error.errorMessage.length > 0 &&
+        {state.error.errorMessage.length > 1 &&
           <div className="mt-32 font-bold max-h-6 max-w-full flex justify-center">
-            <img src={attentionLogo} alt="Icône d'avertissement" />
+            <img className="attention" src={attentionLogo} alt="Icône d'avertissement" />
             <p className="ml-6">{state.error.errorMessage}</p>
           </div>
         }

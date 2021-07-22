@@ -3,7 +3,7 @@ const SECRET_STRIPE_API_KEY = process.env.SECRET_STRIPE_API_KEY;
 const stripe = require('stripe')(SECRET_STRIPE_API_KEY);
 const CustomerModel = require('./../models/Customer');
 module.exports = {
-
+    
     intents: {
 
         create: async (req, res, next) => {
@@ -13,23 +13,22 @@ module.exports = {
                 const paymentIntention = await stripe.paymentIntents
                     .create(req.body)
                 const secret = paymentIntention.client_secret;
-                // console.log("SECRET BACK =>", secret, "PI =>", paymentIntention);
-
+                
                 return res.json({ success: true, result: paymentIntention, secret: secret })
             }
 
             catch (error) {
-                console.log("ERREUR EMISE PAR OBJET INTENTIONS DE PAIEMENT =>", error);
+                console.log("ERREUR EMISE PAR OBJET PAYMENT INTENTS =>", error);
                 next(error);
             }
-        },
-
-
+            
+        }, 
+        
         retrieve: async (req, res, next) => {
-
+            
             try {
                 const intentPaymentRetrieved = await stripe.paymentIntents
-                    .retrieve(req.body.intentId);
+                .retrieve(req.body.intentId);
 
                 return res.json({ success: true, result: intentPaymentRetrieved })
 
@@ -39,12 +38,12 @@ module.exports = {
         },
 
         update: async (req, res, next) => {
-
+            
             try {
                 const intentPaymentUpdated = await stripe.paymentIntents
-                    .update("pi_1InN2sLG9PLRTQCEPh49EjxE", {
-                        amount: "8888"
-                    });
+                .update(req.body.data.paymentIntentId,{
+                    amount: req.body.data.amount
+                });
 
 
                 return res.json({ success: true, result: intentPaymentUpdated })
@@ -53,66 +52,65 @@ module.exports = {
                 next(error)
             }
         },
-
+       
     },
 
     payments: {
         create: async (req, res, next) => {
             try {
+
                 //! Moyen de paiement (ici carte bancaire)
                 const newPaymentMethod = await stripe.paymentMethods
-                    .create({
-                        billing_details: {
-                            email: "test@test.fr",
-                            name: "Iskariot",
-                            phone: "+33 858153874",
-                        },
-                        type: 'card',
-                        card: {
-                            number: "4242424242424242",
-                            exp_month: 2,
-                            exp_year: 2024,
-                            cvc: "190"
-                        },
-                    });
-
-                return res.json({ success: true, result: newPaymentMethod })
-
-            }
-
+                .create({   
+                    billing_details: {
+                        email: req.body.data.customerMail,
+                        name: req.body.data.customerName,
+                        phone: req.body.data.customerPhone,
+                    },
+                    type: req.body.data.paymentType,
+                    card: {
+                        number: req.body.data.cardNummer,
+                        exp_month: req.body.data.cardExpMonth,
+                        exp_year: req.body.data.cardExpYear,
+                        cvc: req.body.data.cardCvc
+                    },
+                });
+                
+                return res.json({ success: true, result: newPaymentMethod})
+            } 
+            
             catch (error) {
 
                 next(error);
             }
         },
+
         //? Afin de pouvoir modifier une méthode de paiement enregistrée, il faut l'attacher à un utilisateur : https://stripe.com/docs/api/payment_methods/attach?lang=node
         savePaymentMethodToAnUser: async (req, res, next) => {
-
+            
             try {
                 //! Méthode de paiement (ex: CB), attachée à l'utilisateur ci-dessous
                 const methodOfCustomer = await stripe.paymentMethods
-                    .attach(
-                        req.body.data.paymentMethodId, {
-                        customer: req.body.data.customerId,
-                    })
-
-                res.json({ succes: true, result: methodOfCustomer })
-            }
+                    .attach(req.body.data.paymentMethodId,{
+                            customer: req.body.data.customerId,
+                        }
+                    )
+                res.json({succes: true, result: methodOfCustomer})
+            } 
+            
             catch (error) {
                 next(error);
             }
-
-
         },
-        
+
         retrieve: async (req, res, next) => {
             try {
                 const retrieveMethod = await stripe.paymentMethods
-                    .retrieve(
-                        "pm_1InOqwLG9PLRTQCE76aBDsHr"
-                    )
+                .retrieve(
+                    req.body.data.paymentMethodId,
+                )
 
-                res.json({ success: true, result: retrieveMethod })
+                res.json({success: true, result: retrieveMethod})
 
             } catch (error) {
 
@@ -123,26 +121,26 @@ module.exports = {
         update: async (req, res, next) => {
             try {
                 const updateMethod = await stripe.paymentMethods
-                    .update(
-                        "pm_1InPNtLG9PLRTQCELLuwFf96", {
+                .update(
+                    req.body.data.paymentMethodId, { 
                         billing_details: {
-                            email: "zoldek@sama.fr",
-                            name: "Iuda",
-                            phone: "+33 0707070707",
+                            email: req.body.data.customerEmail,
+                            name: req.body.data.customerName,
+                            phone: req.body.data.customerPhone,
                         },
                     }
-                    )
-
-                res.json({ success: true, result: updateMethod })
-            }
-
+                )
+                
+                res.json({success: true, result: updateMethod})
+            } 
+            
             catch (error) {
-
+                
                 next(error);
             }
         }
     },
-
+    
     customers: {
         create: async (req, res, next) => {
             try {
@@ -150,16 +148,16 @@ module.exports = {
                 //? Création d'un utilisateur en base de données personnelle
                 const newCleverCustomer = new CustomerModel(req.body)
                 await newCleverCustomer.save();
-
+                
                 //? Création d'un utilisateur en base de données Stripe
                 const newCustomer = await stripe.customers
-                    .create(req.body)
-
-                res.json({ success: true, result: newCustomer })
-            }
-
+                .create (req.body)
+                
+                res.json({success: true, result: newCustomer})
+            } 
+            
             catch (error) {
-
+                
                 next(error)
             }
         },
@@ -167,15 +165,13 @@ module.exports = {
         retrieve: async (req, res, next) => {
             try {
                 const customer = req.body.data.customerId;
-                console.log(customer);
-
+                
                 const customerFinded = await stripe.customers
                     .retrieve(customer);
-
-                return res.json({ success: true, result: customerFinded })
-
-            }
-
+                
+                return res.json({success: true, result: customerFinded})
+            } 
+            
             catch (error) {
                 next(error);
             }
@@ -184,13 +180,13 @@ module.exports = {
         retrieveAll: async (req, res, next) => {
 
             try {
-
+                
                 const customers = await stripe.customers.list();
-
+                
                 return res.json({ success: true, result: customers })
-
-            }
-
+                
+            } 
+            
             catch (error) {
                 next(error);
             }
@@ -198,20 +194,19 @@ module.exports = {
 
         update: async (req, res, next) => {
             try {
-
+                
                 const editedCustomer = await stripe.customers
-                    .update(req.body.idCustomer, req.body.data);
-
-                res.json({ success: true, result: editedCustomer })
-
-            }
-
+                .update(req.body.idCustomer, req.body.data);
+                
+                res.json({success: true, result: editedCustomer}) 
+            } 
+            
             catch (error) {
                 next(error);
             }
         }
     },
-
+    
     prices: {
         retrieve: async (req, res, next) => {
 
@@ -221,30 +216,29 @@ module.exports = {
                 const pricesObject = await stripe.prices
                     .retrieve("price_1Is2XMLG9PLRTQCEKWFclXzD")
 
-                return res.json({ success: true, result: pricesObject })
-
+                return res.json({ success: true, result: pricesObject})
+                
             } catch (error) {
                 console.log("ERREUR RENVOYEE PAR PRICES OBJECT =>", error);
                 next(error);
             }
-
-
         },
-        retrieveAll: async (req, res, next) => {
 
+        retrieveAll: async (req, res, next) => {
+        
             try {
 
                 const pricesObjects = await stripe.prices
                     .list()
 
-                return res.json({ success: true, result: pricesObjects })
-
+                return res.json({ success: true, result: pricesObjects})
+                
             } catch (error) {
                 console.log("ERREUR RENVOYEE PAR PRICES OBJECT =>", error);
                 next(error);
             }
-        },
-
+        }, 
+        
         update: async (req, res, next) => {
 
             try {
@@ -255,38 +249,38 @@ module.exports = {
                 return res.json({ success: true, result: pricesObjectsUpdated })
 
             } catch (error) {
-                console.log("ERREUR RENVOYEE PAR PRICES OBJECT =>", error);
+                console.log("ERREUR EMISE PAR OBJECT PRICES =>", error);
                 next(error);
             }
-        }
-    },
+        },
 
+    },
+    
     products: {
         retrieveAll: async (req, res, next) => {
 
             try {
 
-                const productObjects = await stripe.products.list({ active: true });
+                const productObjects = await stripe.products
+                    .list({ active: true });
 
                 return res.json({ success: true, result: productObjects })
 
             } catch (error) {
-                console.log("ERREUR RENVOYEE PAR PRODUCT OBJECT =>", error);
+                console.log("ERREUR EMISE PAR OBJECT PRODUCT =>", error);
                 next(error);
             }
-
-
         }
     },
-
-    taxRates: {
+     taxRates: {
 
         create: null, //? Taxe TVA créée via la ligne de commande Stripe CLI : https://stripe.com/docs/api/tax_rates/object?lang=cli
 
         retrieveAll: async (req, res, next) => {
 
             try {
-                const data = await stripe.taxRates.list();
+                const data = await stripe.taxRates
+                    .list();
                 return res.json({ taxexList: data });
             }
             catch (err) {
@@ -351,35 +345,29 @@ module.exports = {
         },
 
         voidFinalizeInvoice: async (req, res, next) => {
-
         },
 
         payFinalizeInvoice: async (req, res, next) => {
-
         },
 
         finalizeDraftInvoice: async (req, res, next) => {
-
         },
 
         sendFinalizeInvoice: async (req, res, next) => {
-
         },
-
         
     },
 
     invoiceItems: {
         create: async (req, res, next) => {
-
         },
     },
-
+    
     sessions: {
         //? Méthode : https://stripe.com/docs/billing/subscriptions/checkout le paiement sera effectué via un formulaire Stripe généré automatiquement pas customisé.
         create: async (req, res, next) => {
-            //? Récupération de l'identifiant de l'objet "Prices" du produit que le client a l'intention d'acheter, envoyé depuis le front lors de l'appel sur cette API
-            const { customerId, productPriceObjectId } = req.body.data;
+            //? Récupération de l'identifiant de "l'objet Prices" du produit que le client a l'intention d'acheter, envoyé depuis le front lors de l'appel sur cette API
+            const {customerId, productPriceObjectId} = req.body.data;
 
             try {
                 //? La session doit être créée avant d'arriver sur la page du formulaire de paiement
@@ -394,7 +382,7 @@ module.exports = {
                         mode: 'subscription',
                         //! Propriété requise
                         payment_method_types: ['card'],
-
+                        
                         //? Propriété optionnelle
                         //? Cette propriété fait référence à la liste d'articles que le client veut acheter : https://stripe.com/docs/api/checkout/sessions/create?lang=node#create_checkout_session-line_items
                         //? Ca peut tout aussi bien être des produits avec un paiement récurent (abonnements) que ponctuel (paiement une seul fois lors de l'achat)
@@ -402,41 +390,40 @@ module.exports = {
                         //?   -   L'identifiant de "l'objet Prices" du produit                    
                         //?   -   La quantité de ce produit souhaité par le client                    
                         line_items: [
-
+                            
                             //? Lorsque le client arrive sur la page de paiement, on est censé récupérer l'identifiant de "l'objet Prices" du produit, et l'envoyer au back lors de l'arrivé du client sur cette page afin d'initialiser la session de paiement 
-                            { price: productPriceObjectId, quantity: 16 }, //? Prix dégressif appliqué car achat de 5+ programmes
+                            {price: productPriceObjectId, quantity: 16}, //? Prix dégressif appliqué car achat de 5+ programmes
                             // {price: "price_1IqEyTLG9PLRTQCEomPMKKzD", quantity: 1}
-
+                        
                         ],
                         //? Propriété optionnelle
                         customer: customerId
 
                     })
 
-                return res.json({ success: true, result: checkoutSession, sessionId: checkoutSession.id })
-
+                return res.json({ success: true, result: checkoutSession, sessionId: checkoutSession.id})
+                
             } catch (error) {
-                console.log("[BACK] Erreur émise lors de l'appel sur l'api création Session =>", error.message);
+                console.log("[BACK] Erreur émise lors de l'appel sur l'api création Session =>",error.message);
                 next(error);
             }
         },
 
         retrieveAll: async (req, res, next) => {
-
+            
             try {
-                const checkoutSessions = await stripe.checkout.sessions.list();
-
-                return res.json({ succes: true, results: checkoutSessions })
+                const checkoutSessions = await stripe.checkout.sessions
+                    .list();
+        
+                return res.json({succes: true, results: checkoutSessions})
             }
 
             catch (err) {
                 console.log(err);
                 next(err);
             }
-
+            
         }
-
-
     },
 
     subscriptions: {
@@ -446,37 +433,40 @@ module.exports = {
                 const taxes = await stripe.taxRates.list({ limit: 1 });
                 const tva = taxes.data[0].id;
 
-                const newSubscription = await stripe.subscriptions.create({
-                    customer: customerId,
-                    items: [
-                        { price: items[0].price, quantity: items[0].quantity, tax_rates: [tva] }
-                    ],
-                    default_payment_method: paymentMethodId
-                    //? Autres attributs pouvant être intéréssants : 
-                    //? - https://stripe.com/docs/api/subscriptions/create#create_subscription-default_payment_method
-                    //? - https://stripe.com/docs/api/subscriptions/create#create_subscription-payment_behavior
-                    //? - https://stripe.com/docs/api/subscriptions/create#create_subscription-add_invoice_items
-                })
+                const newSubscription = await stripe.subscriptions
+                    .create({
+                        customer: customerId,
+                            items: [
+                                { price: items[0].price, quantity: items[0].quantity, tax_rates: [tva] }
+                            ],
+                            default_payment_method: paymentMethodId
+                            //? Autres attributs pouvant être intéréssants : 
+                            //? - https://stripe.com/docs/api/subscriptions/create#create_subscription-default_payment_method
+                            //? - https://stripe.com/docs/api/subscriptions/create#create_subscription-payment_behavior
+                            //? - https://stripe.com/docs/api/subscriptions/create#create_subscription-add_invoice_items
+                    })
 
                 return res.json({ success: true, createdSubscription: newSubscription })
+            } 
 
-            } catch (error) {
+             catch (error) {
                 console.log("ERREUR RENVOYEE PAR SUBSCRIPTIONS OBJECT =>", error);
-            }
+            }    
         },
 
         retrieveAll: async (req, res, next) => {
-
+            
             try {
-                const activeSubscriptionList = await stripe.subscriptions.list();
+                const activeSubscriptionList = await stripe.subscriptions
+                    .list();
 
-                return res.json({ success: true, subscriptionList: activeSubscriptionList })
-
+                return res.json({ success: true, subscriptionList: activeSubscriptionList})
+                    
             } catch (error) {
                 console.log(error);
                 next(error);
             }
-
+        
         }
     },
 
@@ -548,4 +538,5 @@ module.exports = {
 
         res.sendStatus(200)
     },
+
 };

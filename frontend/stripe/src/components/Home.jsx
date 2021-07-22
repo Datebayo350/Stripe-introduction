@@ -190,7 +190,7 @@ const Home = () => {
         const subscriptionType = e.target.innerHTML;
         const decomposeSubscriptionName = subscriptionType.split(" ");
         const premiumORsilver = decomposeSubscriptionName[1];
-        premiumORsilver === "Silver" ? dispatch({ type: RECORD_SUBSCRIPTION_SELECTED, payload: { subscription: "Silver", objectPriceId: state.silverPriceId, productQuantity: state.silverProductCounter } }) : dispatch({ type: RECORD_SUBSCRIPTION_SELECTED, payload: { subscription: "Premium", objectPriceId: state.premiumPriceId, productQuantity: state.premiumProductCounter } })
+        premiumORsilver === "Silver" && state.silverProductCounter > 0 ? dispatch({ type: RECORD_SUBSCRIPTION_SELECTED, payload: { subscription: "Silver", objectPriceId: state.silverPriceId, productQuantity: state.silverProductCounter } }) : dispatch({ type: RECORD_SUBSCRIPTION_SELECTED, payload: { subscription: "Premium", objectPriceId: state.premiumPriceId, productQuantity: state.premiumProductCounter } })
 
         calculatePricePerSubscription();
     };
